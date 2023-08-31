@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import Plotter
+import tensorflow as tf
 
 from sklearn.metrics import accuracy_score
 from keras.models import load_model
@@ -8,6 +9,11 @@ from ConvolutionalNeuralNetworks import ConvolutionalNeuralNetworks
 from HumanQLearning import HumanQLearning
 from ImageHelper import NumpyImg2Tensor
 from QLearningModel import QLearningModel
+
+config = tf.compat.v1.ConfigProto(
+    inter_op_parallelism_threads=4,
+    intra_op_parallelism_threads=4)
+session = tf.compat.v1.Session(config=config)
 
 # ---------------------------1) Program Variables--------------------------------------
 TRAIN_QL = True
@@ -71,6 +77,7 @@ if TRAIN_QL:
         predicted_labels_before_ql = []
         predicted_labels_after_ql = []
 
+        print(f'Training {QL_network_name} using {action_selection_strategy}')
         for i in range(num_splits):
             test_split = test_splits[i]
             X_test = test_split[0]
@@ -80,7 +87,7 @@ if TRAIN_QL:
             predicted_labels_after_ql_one_split = []
 
             for img, label in zip(X_test, y_test):
-                print(f'Prediction using model: {i}')
+                print(f'Split: {i}')
                 # Prediction before applying action
                 probabilities_vector_before_applying_action = inception_models[i].predict(NumpyImg2Tensor(img))
                 predictedLabel_before_applying_action = np.argmax(probabilities_vector_before_applying_action)
@@ -90,20 +97,31 @@ if TRAIN_QL:
                     QL_network.perform_iterative_Q_learning(inception_model_object, img, classes, action_selection_strategy)
                     optimal_action = QL_network.choose_optimal_action()
                     corrected_img = QL_network.apply_action(optimal_action, img)
+
+                    # Wrong here
                     probabilities_vector_after_applying_action = inception_models[i].predict(NumpyImg2Tensor(corrected_img))
                     # Prediction after applying action
                     predictedLabel_after_applying_action = np.argmax(probabilities_vector_after_applying_action)
                     predicted_labels_after_ql_one_split.append(predictedLabel_after_applying_action)
+                else:
+                    predicted_labels_after_ql_one_split.append(predictedLabel_before_applying_action)
 
             predicted_labels_before_ql.append(predicted_labels_before_ql_one_split)
             predicted_labels_after_ql.append(predicted_labels_after_ql_one_split)
 
             # Output of one split [1,2,3,4,5]
             max_Q_values_TS_QL_list = QL_network.get_best_max_Q_values_one_img()
+            print(f'max_Q_values_TS_QL_list: {max_Q_values_TS_QL_list}')
+
             cum_r_TS_QL_list = QL_network.get_best_max_cum_r_one_img()
+            cum_r_TS_QL_list = cum_r_TS_QL_list.tolist()
+            print(f'cum_r_TS_QL_list: {cum_r_TS_QL_list}')
 
             max_Q_values_lists.append(max_Q_values_TS_QL_list)
+            print(f'max_Q_values_lists appended: {max_Q_values_lists}')
+            # What the fuck
             cum_r_lists.append(cum_r_TS_QL_list)
+            print(f'cum_r_lists appended: {cum_r_lists}')
 
         average_max_Q_values_list = np.mean(max_Q_values_lists, axis=0)
         print(f'Average max Q values {QL_network_name} list: {average_max_Q_values_list}')

@@ -270,9 +270,9 @@ class HumanQLearning:
 
             print('\n3. Get human reward feedback')
             print('Enter one of the following options: (1) for correct prediction, (-1) for wrong prediction')
-            r = input()
-            r = int(r)
-            action_feedback[action] = r
+            self.r = input()
+            self.r = int(self.r)
+            action_feedback[action] = self.r
 
         # Use the collected feedback for subsequent iterations
         for i in range(self.maxIter):
@@ -287,22 +287,25 @@ class HumanQLearning:
             self.action = self.selectAction()  # Choose action based on some strategy
 
             modified_img = self.apply_action(self.action, img)
-            r = action_feedback[self.action]
+            self.r = action_feedback[self.action]
 
-            state = self.define_state(r)
-            self.update_tableQ(state, self.action, r)
+            state = self.define_state(self.r)
+            self.update_tableQ(state, self.action, self.r)
 
-            self.rewards.append(r)
-            self.cum_rewards = np.cumsum(self.rewards)
-            self.cum_rewards_all_images.append(self.cum_rewards)
-            self.max_q_estimates_all_images.append(self.max_q_estimates)
+            self.rewards.append(self.r)
 
-            if action_selection_strategy == 'harmonic-sequence-e-decay' and r == 1:
+            # print(f'max_q_estimates_all_images: {self.max_q_estimates_all_images}')
+
+            if action_selection_strategy == 'harmonic-sequence-e-decay' and self.r == 1:
                 eps = 1 / (decay_index + 1) ** 2
                 decay_index = decay_index + 1
 
-            if action_selection_strategy == 'one-shot-e-decay' and r != 1:
+            if action_selection_strategy == 'one-shot-e-decay' and self.r != 1:
                 eps = 0
+
+        self.cum_rewards = np.cumsum(self.rewards)
+        self.cum_rewards_all_images.append(self.cum_rewards)
+        self.max_q_estimates_all_images.append(self.max_q_estimates)
 
     def choose_optimal_action(self):
         total = np.sum(self.tableQ, axis=0)
