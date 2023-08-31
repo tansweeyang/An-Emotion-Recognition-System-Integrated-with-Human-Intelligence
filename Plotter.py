@@ -228,7 +228,7 @@ def plotActionSelectionAnalysis(episodes,
                             average_cum_r_TS_QL_HF_list_one_shot + std_dev_cum_r_TS_QL_HF_list_one_shot, color='red',
                             alpha=0.2, label='_nolegend_')
 
-    plt.figlegend(['random selection', 'harmonic e-decay', 'oneshot e-decay'], loc='lower center', fontsize=8)
+    plt.figlegend(['oneshot e-decay','harmonic e-decay', 'random selection'], loc='lower center', fontsize=8)
     plt.tight_layout()
     plt.show()
 
