@@ -175,58 +175,80 @@ def plotActionSelectionAnalysis(episodes,
                                 ):
 
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(6, 6))
+    y_ticks_cum_r = np.arange(-40, 60, 20)
 
     axes[0, 0].set_title('(a) Max Q-Values of First Misclassified Image in TS-QL Averaged over 10 Folds', fontsize=8)
     axes[0, 0].set_xlabel('Episodes', fontsize=8)
     axes[0, 0].set_ylabel('Max Q-values', fontsize=8)
-    axes[0, 0].plot(episodes, average_max_Q_values_TS_QL_list_random, color='blue', label='random selection')
-    axes[0, 0].fill_between(episodes, average_max_Q_values_TS_QL_list_random - std_dev_max_Q_values_TS_QL_list_random, average_max_Q_values_TS_QL_list_random + std_dev_max_Q_values_TS_QL_list_random, color='blue', alpha=0.2, label='_nolegend_')
-    axes[0, 0].plot(episodes, average_max_Q_values_TS_QL_list_harmonic, color='orange', label='harmonic e-decay')
-    axes[0, 0].fill_between(episodes, average_max_Q_values_TS_QL_list_harmonic - std_dev_max_Q_values_TS_QL_list_harmonic, average_max_Q_values_TS_QL_list_harmonic + std_dev_max_Q_values_TS_QL_list_harmonic, color='orange', alpha=0.2, label='_nolegend_')
     axes[0, 0].plot(episodes, average_max_Q_values_TS_QL_list_one_shot, color='red', label='oneshot e-decay')
-    axes[0, 0].fill_between(episodes, average_max_Q_values_TS_QL_list_one_shot - std_dev_max_Q_values_TS_QL_list_one_shot, average_max_Q_values_TS_QL_list_one_shot + std_dev_max_Q_values_TS_QL_list_one_shot, color='red', alpha=0.2, label='_nolegend_')
+    axes[0, 0].fill_between(episodes,
+                            average_max_Q_values_TS_QL_list_one_shot - std_dev_max_Q_values_TS_QL_list_one_shot,
+                            average_max_Q_values_TS_QL_list_one_shot + std_dev_max_Q_values_TS_QL_list_one_shot,
+                            color='red', alpha=0.2, label='_nolegend_')
+    axes[0, 0].plot(episodes, average_max_Q_values_TS_QL_list_harmonic, color='orange', label='harmonic e-decay')
+    axes[0, 0].fill_between(episodes,
+                            average_max_Q_values_TS_QL_list_harmonic - std_dev_max_Q_values_TS_QL_list_harmonic,
+                            average_max_Q_values_TS_QL_list_harmonic + std_dev_max_Q_values_TS_QL_list_harmonic,
+                            color='orange', alpha=0.2, label='_nolegend_')
+    axes[0, 0].plot(episodes, average_max_Q_values_TS_QL_list_random, color='blue', label='random selection')
+    axes[0, 0].fill_between(episodes, average_max_Q_values_TS_QL_list_random - std_dev_max_Q_values_TS_QL_list_random,
+                            average_max_Q_values_TS_QL_list_random + std_dev_max_Q_values_TS_QL_list_random,
+                            color='blue', alpha=0.2, label='_nolegend_')
 
     axes[0, 1].set_title('(b) Cumulative Rewards of First Misclassified Image in TS-QL Averaged over 10 Folds', fontsize=8)
     axes[0, 1].set_xlabel('Episodes', fontsize=8)
     axes[0, 1].set_ylabel('Cumulative Rewards', fontsize=8)
-    axes[0, 1].plot(episodes, average_cum_r_TS_QL_list_random, color='blue', label='random selection')
-    axes[0, 1].fill_between(episodes, average_cum_r_TS_QL_list_random - std_dev_cum_r_TS_QL_list_random,
-                            average_cum_r_TS_QL_list_random + std_dev_cum_r_TS_QL_list_random, color='blue', alpha=0.2,
-                            label='_nolegend_')
-    axes[0, 1].plot(episodes, average_cum_r_TS_QL_list_harmonic, color='orange', label='harmonic e-decay')
-    axes[0, 1].fill_between(episodes, average_cum_r_TS_QL_list_harmonic - std_dev_cum_r_TS_QL_list_harmonic,
-                            average_cum_r_TS_QL_list_harmonic + std_dev_cum_r_TS_QL_list_harmonic, color='orange',
-                            alpha=0.2, label='_nolegend_')
     axes[0, 1].plot(episodes, average_cum_r_TS_QL_list_one_shot, color='red', label='oneshot e-decay')
     axes[0, 1].fill_between(episodes, average_cum_r_TS_QL_list_one_shot - std_dev_cum_r_TS_QL_list_one_shot,
                             average_cum_r_TS_QL_list_one_shot + std_dev_cum_r_TS_QL_list_one_shot, color='red',
                             alpha=0.2, label='_nolegend_')
+    axes[0, 1].plot(episodes, average_cum_r_TS_QL_list_harmonic, color='orange', label='harmonic e-decay')
+    axes[0, 1].fill_between(episodes, average_cum_r_TS_QL_list_harmonic - std_dev_cum_r_TS_QL_list_harmonic,
+                            average_cum_r_TS_QL_list_harmonic + std_dev_cum_r_TS_QL_list_harmonic, color='orange',
+                            alpha=0.2, label='_nolegend_')
+    axes[0, 1].plot(episodes, average_cum_r_TS_QL_list_random, color='blue', label='random selection')
+    axes[0, 1].fill_between(episodes, average_cum_r_TS_QL_list_random - std_dev_cum_r_TS_QL_list_random,
+                            average_cum_r_TS_QL_list_random + std_dev_cum_r_TS_QL_list_random, color='blue', alpha=0.2,
+                            label='_nolegend_')
+    axes[0, 1].set_yticks(y_ticks_cum_r)
+    axes[0, 1].set_yticklabels(y_ticks_cum_r)
 
     axes[1, 0].set_title('(c) Max Q-Values of First Misclassified Image in TS-QL-HF Averaged over 10 Folds', fontsize=8)
     axes[1, 0].set_xlabel('Episodes', fontsize=8)
     axes[1, 0].set_ylabel('Max Q-values', fontsize=8)
-    axes[1, 0].plot(episodes, average_max_Q_values_TS_QL_HF_list_random, color='blue', label='random selection')
-    axes[1, 0].fill_between(episodes, average_max_Q_values_TS_QL_HF_list_random - std_dev_max_Q_values_TS_QL_HF_list_random, average_max_Q_values_TS_QL_HF_list_random + std_dev_max_Q_values_TS_QL_HF_list_random, color='blue', alpha=0.2, label='_nolegend_')
-    axes[1, 0].plot(episodes, average_max_Q_values_TS_QL_HF_list_harmonic, color='orange', label='harmonic e-decay')
-    axes[1, 0].fill_between(episodes, average_max_Q_values_TS_QL_HF_list_harmonic - std_dev_max_Q_values_TS_QL_HF_list_harmonic, average_max_Q_values_TS_QL_HF_list_harmonic + std_dev_max_Q_values_TS_QL_HF_list_harmonic, color='orange', alpha=0.2, label='_nolegend_')
     axes[1, 0].plot(episodes, average_max_Q_values_TS_QL_HF_list_one_shot, color='red', label='oneshot e-decay')
-    axes[1, 0].fill_between(episodes, average_max_Q_values_TS_QL_HF_list_one_shot - std_dev_max_Q_values_TS_QL_HF_list_one_shot, average_max_Q_values_TS_QL_HF_list_one_shot + std_dev_max_Q_values_TS_QL_HF_list_one_shot, color='red', alpha=0.2, label='_nolegend_')
+    axes[1, 0].fill_between(episodes,
+                            average_max_Q_values_TS_QL_HF_list_one_shot - std_dev_max_Q_values_TS_QL_HF_list_one_shot,
+                            average_max_Q_values_TS_QL_HF_list_one_shot + std_dev_max_Q_values_TS_QL_HF_list_one_shot,
+                            color='red', alpha=0.2, label='_nolegend_')
+    axes[1, 0].plot(episodes, average_max_Q_values_TS_QL_HF_list_harmonic, color='orange', label='harmonic e-decay')
+    axes[1, 0].fill_between(episodes,
+                            average_max_Q_values_TS_QL_HF_list_harmonic - std_dev_max_Q_values_TS_QL_HF_list_harmonic,
+                            average_max_Q_values_TS_QL_HF_list_harmonic + std_dev_max_Q_values_TS_QL_HF_list_harmonic,
+                            color='orange', alpha=0.2, label='_nolegend_')
+    axes[1, 0].plot(episodes, average_max_Q_values_TS_QL_HF_list_random, color='blue', label='random selection')
+    axes[1, 0].fill_between(episodes,
+                            average_max_Q_values_TS_QL_HF_list_random - std_dev_max_Q_values_TS_QL_HF_list_random,
+                            average_max_Q_values_TS_QL_HF_list_random + std_dev_max_Q_values_TS_QL_HF_list_random,
+                            color='blue', alpha=0.2, label='_nolegend_')
 
     axes[1, 1].set_title('(d) Cumulative Rewards of First Misclassified Image in TS-QL-HF Averaged over 10 Folds', fontsize=8)
     axes[1, 1].set_xlabel('Episodes', fontsize=8)
     axes[1, 1].set_ylabel('Cumulative Rewards', fontsize=8)
-    axes[1, 1].plot(episodes, average_cum_r_TS_QL_HF_list_random, color='blue', label='random selection')
-    axes[1, 1].fill_between(episodes, average_cum_r_TS_QL_HF_list_random - std_dev_cum_r_TS_QL_HF_list_random,
-                            average_cum_r_TS_QL_HF_list_random + std_dev_cum_r_TS_QL_HF_list_random, color='blue',
+    axes[1, 1].plot(episodes, average_cum_r_TS_QL_HF_list_one_shot, color='red', label='oneshot e-decay')
+    axes[1, 1].fill_between(episodes, average_cum_r_TS_QL_HF_list_one_shot - std_dev_cum_r_TS_QL_HF_list_one_shot,
+                            average_cum_r_TS_QL_HF_list_one_shot + std_dev_cum_r_TS_QL_HF_list_one_shot, color='red',
                             alpha=0.2, label='_nolegend_')
     axes[1, 1].plot(episodes, average_cum_r_TS_QL_HF_list_harmonic, color='orange', label='harmonic e-decay')
     axes[1, 1].fill_between(episodes, average_cum_r_TS_QL_HF_list_harmonic - std_dev_cum_r_TS_QL_HF_list_harmonic,
                             average_cum_r_TS_QL_HF_list_harmonic + std_dev_cum_r_TS_QL_HF_list_harmonic, color='orange',
                             alpha=0.2, label='_nolegend_')
-    axes[1, 1].plot(episodes, average_cum_r_TS_QL_HF_list_one_shot, color='red', label='oneshot e-decay')
-    axes[1, 1].fill_between(episodes, average_cum_r_TS_QL_HF_list_one_shot - std_dev_cum_r_TS_QL_HF_list_one_shot,
-                            average_cum_r_TS_QL_HF_list_one_shot + std_dev_cum_r_TS_QL_HF_list_one_shot, color='red',
+    axes[1, 1].plot(episodes, average_cum_r_TS_QL_HF_list_random, color='blue', label='random selection')
+    axes[1, 1].fill_between(episodes, average_cum_r_TS_QL_HF_list_random - std_dev_cum_r_TS_QL_HF_list_random,
+                            average_cum_r_TS_QL_HF_list_random + std_dev_cum_r_TS_QL_HF_list_random, color='blue',
                             alpha=0.2, label='_nolegend_')
+    axes[1, 1].set_yticks(y_ticks_cum_r)
+    axes[1, 1].set_yticklabels(y_ticks_cum_r)
 
     plt.figlegend(['oneshot e-decay','harmonic e-decay', 'random selection'], loc='lower center', fontsize=8)
     plt.tight_layout()
