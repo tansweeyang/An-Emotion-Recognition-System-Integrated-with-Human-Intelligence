@@ -8,8 +8,8 @@ from ImageHelper import NumpyImg2Tensor
 
 class HumanQLearning:
     def __init__(self):
-        self.alpha = 0.4
-        self.gamma = 0.3
+        self.alpha = 1 # 0.4
+        self.gamma = 0 # 0.3
         self.angle1 = 90
         self.angle2 = 180
         self.angle3 = 12.5
