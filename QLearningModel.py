@@ -1,14 +1,14 @@
 import numpy as np
 import cv2
-import pandas as pd
 
 from random import randrange
 from scipy.ndimage.interpolation import rotate
 
+
 class QLearningModel:
     def __init__(self):
-        self.alpha = 0.4
-        self.gamma = 0.3
+        self.alpha = 1
+        self.gamma = 0
         self.angle1 = 90
         self.angle2 = 180
         self.angle3 = 12.5
@@ -22,7 +22,7 @@ class QLearningModel:
         self.r_h = 0
         self.r = 0
         self.episode = 0
-        self.maxIter = 60
+        self.maxIter = 10
         self.rewards = []
         self.cum_rewards = []
         self.max_q_estimates = []
@@ -105,7 +105,10 @@ class QLearningModel:
 
         return best_cum_r_list
 
-    def perform_iterative_Q_learning(self, cnn, img, classes, action_selection_strategy):
+    def perform_iterative_Q_learning(self, cnn, img, classes, action_selection_strategy, alpha, gamma):
+        self.alpha = alpha
+        self.gamma = gamma
+
         print(f'selected strategy: {action_selection_strategy}')
 
         print('Reset here')

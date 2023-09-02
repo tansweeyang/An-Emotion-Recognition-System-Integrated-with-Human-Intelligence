@@ -25,7 +25,7 @@ class HumanDoubleQLearning:
 
         self.r = 0
         self.episode = 0
-        self.maxIter = 60
+        self.maxIter = 10
         self.max_q_estimates = []
         self.rewards = []
         self.cum_rewards = []
@@ -69,34 +69,34 @@ class HumanDoubleQLearning:
         p = np.random.random()
         if p < eps:
             rand_action = np.random.choice(len(self.actions))
-            print(f'Rand action: {rand_action}')
+            # print(f'Rand action: {rand_action}')
             return int(rand_action)
         else:
             self.average_q_table = np.mean([self.tableQ_A, self.tableQ_B], axis=0)
             total = np.sum(self.average_q_table, axis=0)
-            print(f'Total: {total}')
+            # print(f'Total: {total}')
             best_action = np.argmax(total)
-            print(f'Best action: {best_action}')
+            # print(f'Best action: {best_action}')
             return int(best_action)
 
     def apply_action(self, action, img):
         return self.actions[action](img)
 
     def define_state(self, reward):
-        print("State chosen: " + str(0 if reward > 0 else 1))
+        # print("State chosen: " + str(0 if reward > 0 else 1))
         return 0 if reward > 0 else 1
 
     def update_tableQ_A(self, state, action, reward):
         a_star = int(np.argmax(self.tableQ_A[state]))
-        print(f'{self.tableQ_A[state][action]} = {self.tableQ_A[state][action]} + {self.alpha} * ({reward} + ({self.gamma} * {self.tableQ_B[state][a_star]}) - {self.tableQ_A[state][action]})')
+        # print(f'{self.tableQ_A[state][action]} = {self.tableQ_A[state][action]} + {self.alpha} * ({reward} + ({self.gamma} * {self.tableQ_B[state][a_star]}) - {self.tableQ_A[state][action]})')
         self.tableQ_A[state][action] = self.tableQ_A[state][action] + self.alpha * (reward + (self.gamma * self.tableQ_B[state][a_star]) - self.tableQ_A[state][action])
-        print(f'New Table A Q(s,a) value: {self.tableQ_A[state][action]}')
+        # print(f'New Table A Q(s,a) value: {self.tableQ_A[state][action]}')
 
     def update_TableQ_B(self, state, action, reward):
         b_star = int(np.argmax(self.tableQ_B[state]))
-        print(f'{self.tableQ_B[state][action]} = {self.tableQ_B[state][action]} + {self.alpha} * ({reward} + ({self.gamma} * {self.tableQ_A[state][b_star]}) - {self.tableQ_B[state][action]})')
+        # print(f'{self.tableQ_B[state][action]} = {self.tableQ_B[state][action]} + {self.alpha} * ({reward} + ({self.gamma} * {self.tableQ_A[state][b_star]}) - {self.tableQ_B[state][action]})')
         self.tableQ_B[state][action] = self.tableQ_B[state][action] + self.alpha * (reward + (self.gamma * self.tableQ_A[state][b_star]) - self.tableQ_B[state][action])
-        print(f'New Table B Q(s,a) value: {self.tableQ_B[state][action]}')
+        # print(f'New Table B Q(s,a) value: {self.tableQ_B[state][action]}')
 
     def get_best_max_Q_values_one_img(self):
         array_totals = [np.sum(arr) for arr in self.max_q_estimates_all_images]
@@ -112,8 +112,10 @@ class HumanDoubleQLearning:
 
         return best_cum_r_list
 
-    def perform_iterative_Q_learning(self, cnn, img, classes, action_selection_strategy):
+    def perform_iterative_Q_learning(self, cnn, img, classes, action_selection_strategy, alpha, gamma):
         print(f'selected strategy: {action_selection_strategy}')
+        self.alpha = alpha
+        self.gamma = gamma
 
         print(f'Reset here')
         self.tableQ_A = np.zeros((len(self.states), len(self.actions)))
@@ -129,13 +131,38 @@ class HumanDoubleQLearning:
         decay_index = 0
         # ---------------------------------
 
-        # Run for (3 actions * 20 = 60 iterations) or until human stops
+        action_feedback = {}  # Store human feedback for each action
+
+        for action in self.actions:
+            modified_img = self.apply_action(action, img)
+
+            probabilities_vector = cnn.model.predict(NumpyImg2Tensor(modified_img))
+            prediction = np.argmax(probabilities_vector)
+            emotion = next(key for key, val in classes.items() if val == prediction)
+            print(f'Is {emotion} the correct emotion?')
+
+            scale_percent = 200  # percent of original size
+            width = int(modified_img.shape[1] * scale_percent / 100)
+            height = int(modified_img.shape[0] * scale_percent / 100)
+            dim = (width, height)
+            modified_img = cv2.resize(modified_img, dim, interpolation=cv2.INTER_CUBIC)
+            cv2.imshow('Modified image', modified_img)
+            cv2.waitKey(0)
+
+            print('\n3. Get human reward feedback')
+            print('Enter one of the following options: (1) for correct prediction, (-1) for wrong prediction')
+            self.r = input()
+            self.r = int(self.r)
+            action_feedback[action] = self.r
+
+        # Use the collected feedback for subsequent iterations
         for i in range(self.maxIter):
             self.max_q_estimates.append(np.max(self.average_q_table))
             print(f'Max q value list updated: {str(self.max_q_estimates)}')
 
             self.episode = self.episode + 1
             print(f'Episode: {self.episode}')
+            print('eps: ' + str(eps))
 
             if action_selection_strategy == 'random':
                 # ---------------------------------------------
@@ -154,65 +181,10 @@ class HumanDoubleQLearning:
                 # ----------------------------------------------
 
             modified_img = self.apply_action(self.action, img)
+            self.r = action_feedback[self.action]
+            self.rewards.append(self.r)
 
-            # Get Human Reward Feedback, 1 for correct prediction, -1 for wrong prediction
-            probabilities_vector = cnn.model.predict(NumpyImg2Tensor(modified_img))
-            prediction = np.argmax(probabilities_vector)
-            emotion = next(key for key, val in classes.items() if val == prediction)
-            print(f'Is {emotion} the correct emotion?')
-
-            scale_percent = 200  # percent of original size
-            width = int(modified_img.shape[1] * scale_percent / 100)
-            height = int(modified_img.shape[0] * scale_percent / 100)
-            dim = (width, height)
-            modified_img = cv2.resize(modified_img, dim, interpolation=cv2.INTER_CUBIC)
-            cv2.imshow('Modified image', modified_img)
-            cv2.waitKey(0)
-
-            if action_selection_strategy == 'random':
-                print('\n3. Get human reward feedback')
-                print('Enter one of the following options: (1) for correct prediction, (-1) for wrong prediction')
-                self.r = input()
-                self.r = int(self.r)
-                self.rewards.append(self.r)
-                print(f'Reward list: {self.rewards}')
-
-            elif action_selection_strategy == 'harmonic-sequence-e-decay':
-                print('\n3. Get human reward feedback')
-                print('Enter one of the following options: (1) for correct prediction, (-1) for wrong prediction')
-                self.r = input()
-                self.r = int(self.r)
-                self.rewards.append(self.r)
-                print(f'Reward list: {self.rewards}')
-
-                # ----------------------------------------------------
-                # Epsilon strategy with harmonic sequence decay part 2
-                if self.r == 1:
-                    eps = 1 / (decay_index + 1) ** 2
-                    decay_index = decay_index + 1
-                # ----------------------------------------------------
-
-            elif action_selection_strategy == 'one-shot-e-decay':
-                # --------------------------------------------
-                # Epsilon strategy with one shot decay part 2
-                if self.r != 1:
-                    print('\n3. Get human reward feedback')
-                    print('Enter one of the following options: (1) for correct prediction, (-1) for wrong prediction')
-                    self.r = input()
-                    self.r = int(self.r)
-                    self.rewards.append(self.r)
-                    print(f'Reward list: {self.rewards}')
-
-                    eps = 0
-                # --------------------------------------------
-
-            # Get state
             state = self.define_state(self.r)
-
-            print(f'State to pass in: {state} {type(state)}')
-            print(f'Action to pass in: {self.action} {type(self.action)}')
-            print(f'Reward to pass in: {self.r} {type(self.r)}')
-
             # Choose Q-table and update
             rand_Q_table = np.random.randint(2)
             if rand_Q_table == 0:
@@ -220,7 +192,11 @@ class HumanDoubleQLearning:
             if rand_Q_table == 1:
                 self.update_TableQ_B(state, self.action, self.r)
 
-            self.r = 0
+            if action_selection_strategy == 'harmonic-sequence-e-decay' and self.r == 1:
+                eps = 1 / (decay_index + 1) ** 2
+                decay_index = decay_index + 1
+            elif action_selection_strategy == 'one-shot-e-decay' and self.r != 1:
+                eps = 0
 
         self.cum_rewards = np.cumsum(self.rewards)
         self.cum_rewards_all_images.append(self.cum_rewards)

@@ -8,10 +8,10 @@ import cv2
 
 class DoubleQLearning:
     def __init__(self):
-        self.alpha = 0.4
-        self.gamma = 0.3
+        self.alpha = 1
+        self.gamma = 0
         self.angle1 = 90
-        self.angle2 = 45
+        self.angle2 = 180
         self.angle3 = 12.5
         self.angle4 = -12.5
         self.M_translation = np.float32([[1, 0, 15], [0, 1, 15]])
@@ -22,22 +22,22 @@ class DoubleQLearning:
 
         self.actions = dict([(0, self.action_rotate_1), (1, self.action_rotate_2), (2, self.diagonal_translation)])
 
+        self.r = 0
+        self.episode = 0
+        self.maxIter = 10
         self.max_q_estimates = []
         self.rewards = []
         self.cum_rewards = []
         self.cum_rewards_all_images = []
         self.max_q_estimates_all_images = []
 
-        self.r_h = 0
-        self.r = 0
-        self.episode = 0
-        self.maxIter = 20
-
         self.total = [0, 0, 0]
 
         # Initialize QA,QB,s
         self.states = [0, 1]
-        self.tableQ = np.zeros((len(self.states), len(self.actions)))
+        self.tableQ_A = np.zeros((len(self.states), len(self.actions)))
+        self.tableQ_B = np.zeros((len(self.states), len(self.actions)))
+        self.average_q_table = np.zeros((len(self.states), len(self.actions)))
 
     def action_rotate_1(self, picture):
         return rotate(picture, self.angle1, reshape=False)
@@ -91,13 +91,24 @@ class DoubleQLearning:
                 self.alpha * (reward + self.gamma * max(self.tableQ[state]) - self.tableQ[state][action]))
         print(f'New Table Q(s,a) value: {self.tableQ[state][action]}')
 
-    def perform_iterative_Q_learning(self, cnn, img, classes):
+    def perform_iterative_Q_learning(self, cnn, img, classes, action_selection_strategy, alpha, gamma):
+        print(f'selected strategy: {action_selection_strategy}')
+        self.alpha = alpha
+        self.gamma = gamma
+
         print(f'Reset here')
-        self.tableQ = np.zeros((len(self.states), len(self.actions)))
+        self.tableQ_A = np.zeros((len(self.states), len(self.actions)))
+        self.tableQ_B = np.zeros((len(self.states), len(self.actions)))
+        self.average_q_table = np.zeros((len(self.states), len(self.actions)))
         self.rewards = []
         self.cum_rewards = []
         self.max_q_estimates = []
-        state = 0
+
+        # Make sure this is in every class
+        # --------------------------------
+        eps = 1.0
+        decay_index = 0
+        # ---------------------------------
 
         img_features = cnn.get_output_base_model(
             img)  # The output activation function of the last layer (original image)
@@ -112,30 +123,43 @@ class DoubleQLearning:
             self.episode = self.episode + 1
             print(f'Episode: {self.episode}')
 
-            # Take action
-            print(self.tableQ)
-            action = self.selectAction()
-            modified_img = self.apply_action(self.action, img)
+            if action_selection_strategy == 'random':
+                # ---------------------------------------------
+                # Random strategy
+                self.action = self.selectAction()
+                # ---------------------------------------------
+            elif action_selection_strategy == 'harmonic-sequence-e-decay':
+                # ----------------------------------------------------
+                # Epsilon strategy with harmonic sequence decay part 1
+                self.action = self.epsilon_greedy_selection(eps)
+                # ----------------------------------------------------
+            elif action_selection_strategy == 'one-shot-e-decay':
+                # ----------------------------------------------
+                # Epsilon strategy with one shot decay part 1
+                self.action = self.epsilon_greedy_selection(eps)
+                # ----------------------------------------------
 
+            modified_img = self.apply_action(self.action, img)
             modified_img_features = cnn.get_output_base_model(
                 modified_img)  # The output activation function of the last layer (modified image)
             m2 = self.get_features_metric(modified_img_features)  # The std deviation of img_features (modified image)
             print(m2)
-            reward = self.get_reward(m1, m2)  # Calculate reward using m2-m1, (m2 > m1 for positive reward) (new std_dev must be higher for positive reward)
-            self.rewards.append(reward)
+            self.r = self.get_reward(m1, m2)  # Calculate reward using m2-m1, (m2 > m1 for positive reward) (new std_dev must be higher for positive reward)
+            self.rewards.append(self.r)
 
-            state = self.define_state(reward)  # Choose a state in the Q-Table, state 0 is reward > 0
-            self.update_tableQ(state, action, reward)  # Update the action value
-
-            print("Action used: " + str(action))
-            print("Stddev of feature map of transformed image: " + str(m2))
-
+            state = self.define_state(self.r)  # Choose a state in the Q-Table, state 0 is reward > 0
             # Choose Q-table and update
             rand_Q_table = np.random.randint(2)
             if rand_Q_table == 0:
-                self.update_tableQ_A(state, action, reward)
+                self.update_tableQ_A(state, self.action, self.r)
             if rand_Q_table == 1:
-                self.update_TableQ_B(state, action, reward)
+                self.update_TableQ_B(state, self.action, self.r)
+
+            if action_selection_strategy == 'harmonic-sequence-e-decay' and self.r == 1:
+                eps = 1 / (decay_index + 1) ** 2
+                decay_index = decay_index + 1
+            elif action_selection_strategy == 'one-shot-e-decay' and self.r != 1:
+                eps = 0
 
         self.cum_rewards = np.cumsum(self.rewards)
         self.cum_rewards_all_images.append(self.cum_rewards)

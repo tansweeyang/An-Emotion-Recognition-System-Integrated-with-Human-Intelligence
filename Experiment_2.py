@@ -16,7 +16,7 @@ config = tf.compat.v1.ConfigProto(
 session = tf.compat.v1.Session(config=config)
 
 # ---------------------------1) Program Variables--------------------------------------
-TRAIN_QL = True
+TRAIN_QL = False
 num_splits = 10
 
 train_splits = []
@@ -70,7 +70,7 @@ if TRAIN_QL:
     image_shape = X_train[0].shape
     inception_model_object.create_model_architecture(image_shape)
 
-    def train_QL(QL_network, QL_network_name, action_selection_strategy):
+    def train_QL(QL_network, QL_network_name, action_selection_strategy, alpha, gamma):
         max_Q_values_lists = []
         cum_r_lists = []
         predicted_labels_before_ql = []
@@ -99,7 +99,7 @@ if TRAIN_QL:
                 print(f'predicted_labels_before_ql_one_split: {predicted_labels_before_ql_one_split}')
 
                 if (predictedLabel_before_applying_action != label):
-                    QL_network.perform_iterative_Q_learning(inception_model_object, img, classes, action_selection_strategy)
+                    QL_network.perform_iterative_Q_learning(inception_model_object, img, classes, action_selection_strategy, alpha, gamma)
                     optimal_action = QL_network.choose_optimal_action()
                     corrected_img = QL_network.apply_action(optimal_action, img)
 
@@ -177,9 +177,9 @@ if TRAIN_QL:
     TS_QL_harmonic = QLearningModel()
     TS_QL_one_shot = QLearningModel()
 
-    average_max_Q_values_TS_QL_list_random, std_dev_max_Q_values_TS_QL_list_random, average_cum_r_TS_QL_list_random, std_dev_cum_r_TS_QL_list_random, final_accuracy_before_TS_QL_random, final_f1_score_before_TS_QL_random, final_accuracy_after_TS_QL_random, final_f1_score_after_TS_QL_random = train_QL(TS_QL_random, 'TS-QL', random_strategy)
-    average_max_Q_values_TS_QL_list_harmonic, std_dev_max_Q_values_TS_QL_list_harmonic, average_cum_r_TS_QL_list_harmonic, std_dev_cum_r_TS_QL_list_harmonic, final_accuracy_before_TS_QL_harmonic, final_f1_score_before_TS_QL_harmonic, final_accuracy_after_TS_QL_harmonic, final_f1_score_after_TS_QL_harmonic = train_QL(TS_QL_harmonic, 'TS-QL', harmonic_decay_strategy)
-    average_max_Q_values_TS_QL_list_one_shot, std_dev_max_Q_values_TS_QL_list_one_shot, average_cum_r_TS_QL_list_one_shot, std_dev_cum_r_TS_QL_list_one_shot, final_accuracy_before_TS_QL_one_shot, final_f1_score_before_TS_QL_one_shot, final_accuracy_after_TS_QL_one_shot, final_f1_score_after_TS_QL_one_shot = train_QL(TS_QL_one_shot, 'TS-QL', one_shot_decay_strategy)
+    average_max_Q_values_TS_QL_list_random, std_dev_max_Q_values_TS_QL_list_random, average_cum_r_TS_QL_list_random, std_dev_cum_r_TS_QL_list_random, final_accuracy_before_TS_QL_random, final_f1_score_before_TS_QL_random, final_accuracy_after_TS_QL_random, final_f1_score_after_TS_QL_random = train_QL(TS_QL_random, 'TS-QL', random_strategy, 1.0, 0.0)
+    average_max_Q_values_TS_QL_list_harmonic, std_dev_max_Q_values_TS_QL_list_harmonic, average_cum_r_TS_QL_list_harmonic, std_dev_cum_r_TS_QL_list_harmonic, final_accuracy_before_TS_QL_harmonic, final_f1_score_before_TS_QL_harmonic, final_accuracy_after_TS_QL_harmonic, final_f1_score_after_TS_QL_harmonic = train_QL(TS_QL_harmonic, 'TS-QL', harmonic_decay_strategy, 1.0, 0.0)
+    average_max_Q_values_TS_QL_list_one_shot, std_dev_max_Q_values_TS_QL_list_one_shot, average_cum_r_TS_QL_list_one_shot, std_dev_cum_r_TS_QL_list_one_shot, final_accuracy_before_TS_QL_one_shot, final_f1_score_before_TS_QL_one_shot, final_accuracy_after_TS_QL_one_shot, final_f1_score_after_TS_QL_one_shot = train_QL(TS_QL_one_shot, 'TS-QL', one_shot_decay_strategy, 1.0, 0.0)
 
     # Subplot (0,0)
     print(f'\naverage_max_Q_values_TS_QL_list_random: {average_max_Q_values_TS_QL_list_random}')
@@ -226,9 +226,9 @@ if TRAIN_QL:
     TS_QL_HF_harmonic = HumanQLearning()
     TS_QL_HF_one_shot = HumanQLearning()
 
-    average_max_Q_values_TS_QL_HF_list_random, std_dev_max_Q_values_TS_QL_HF_list_random, average_cum_r_TS_QL_HF_list_random, std_dev_cum_r_TS_QL_HF_list_random, final_accuracy_before_TS_QL_HF_random, final_f1_score_before_TS_QL_HF_random, final_accuracy_after_TS_QL_HF_random, final_f1_score_after_TS_QL_HF_random = train_QL(TS_QL_HF_random, 'TS-QL-HF', random_strategy)
-    average_max_Q_values_TS_QL_HF_list_harmonic, std_dev_max_Q_values_TS_QL_HF_list_harmonic, average_cum_r_TS_QL_HF_list_harmonic, std_dev_cum_r_TS_QL_HF_list_harmonic, final_accuracy_before_TS_QL_HF_harmonic, final_f1_score_before_TS_QL_HF_harmonic, final_accuracy_after_TS_QL_HF_harmonic, final_f1_score_after_TS_QL_HF_harmonic = train_QL(TS_QL_HF_harmonic, 'TS-QL-HF', harmonic_decay_strategy)
-    average_max_Q_values_TS_QL_HF_list_one_shot, std_dev_max_Q_values_TS_QL_HF_list_one_shot, average_cum_r_TS_QL_HF_list_one_shot, std_dev_cum_r_TS_QL_HF_list_one_shot, final_accuracy_before_TS_QL_HF_one_shot, final_f1_score_before_TS_QL_HF_one_shot, final_accuracy_after_TS_QL_HF_one_shot, final_f1_score_after_TS_QL_HF_one_shot = train_QL(TS_QL_HF_one_shot, 'TS-QL-HF', one_shot_decay_strategy)
+    average_max_Q_values_TS_QL_HF_list_random, std_dev_max_Q_values_TS_QL_HF_list_random, average_cum_r_TS_QL_HF_list_random, std_dev_cum_r_TS_QL_HF_list_random, final_accuracy_before_TS_QL_HF_random, final_f1_score_before_TS_QL_HF_random, final_accuracy_after_TS_QL_HF_random, final_f1_score_after_TS_QL_HF_random = train_QL(TS_QL_HF_random, 'TS-QL-HF', random_strategy, 1.0, 0.0)
+    average_max_Q_values_TS_QL_HF_list_harmonic, std_dev_max_Q_values_TS_QL_HF_list_harmonic, average_cum_r_TS_QL_HF_list_harmonic, std_dev_cum_r_TS_QL_HF_list_harmonic, final_accuracy_before_TS_QL_HF_harmonic, final_f1_score_before_TS_QL_HF_harmonic, final_accuracy_after_TS_QL_HF_harmonic, final_f1_score_after_TS_QL_HF_harmonic = train_QL(TS_QL_HF_harmonic, 'TS-QL-HF', harmonic_decay_strategy, 1.0, 0.0)
+    average_max_Q_values_TS_QL_HF_list_one_shot, std_dev_max_Q_values_TS_QL_HF_list_one_shot, average_cum_r_TS_QL_HF_list_one_shot, std_dev_cum_r_TS_QL_HF_list_one_shot, final_accuracy_before_TS_QL_HF_one_shot, final_f1_score_before_TS_QL_HF_one_shot, final_accuracy_after_TS_QL_HF_one_shot, final_f1_score_after_TS_QL_HF_one_shot = train_QL(TS_QL_HF_one_shot, 'TS-QL-HF', one_shot_decay_strategy, 1.0, 0.0)
 
     # Subplot (1,0)
     print(f'\naverage_max_Q_values_TS_QL_HF_list_random: {average_max_Q_values_TS_QL_HF_list_random}')
@@ -352,7 +352,7 @@ for array_name in array_names:
 # --------------------------------------------------------------------------------
 
 # -------------------------------------------------9) Plot the graph ------------------------------------------------------------------------------------
-episodes = range(1, 61)
+episodes = range(1, 11)
 Plotter.plotActionSelectionAnalysis(episodes,
                             loaded_arrays["average_max_Q_values_TS_QL_list_random"], loaded_arrays["std_dev_max_Q_values_TS_QL_list_random"],
                             loaded_arrays["average_max_Q_values_TS_QL_list_harmonic"], loaded_arrays["std_dev_max_Q_values_TS_QL_list_harmonic"],

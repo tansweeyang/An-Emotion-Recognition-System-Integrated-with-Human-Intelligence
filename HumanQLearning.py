@@ -31,7 +31,7 @@ class HumanQLearning:
         self.r_h = 0
         self.r = 0
         self.episode = 0
-        self.maxIter = 60
+        self.maxIter = 10
 
         self.total = [0, 0, 0]
 
@@ -105,136 +105,10 @@ class HumanQLearning:
 
         return best_cum_r_list
 
-    # def perform_iterative_Q_learning(self, cnn, img, classes, action_selection_strategy):
-    #     print(f'selected strategy: {action_selection_strategy}')
-    #
-    #     print(f'Reset here')
-    #     self.tableQ = np.zeros((len(self.states), len(self.actions)))
-    #     self.rewards = []
-    #     self.cum_rewards = []
-    #     self.max_q_estimates = []
-    #
-    #     # Make sure this is in every class
-    #     # --------------------------------
-    #     eps = 1.0
-    #     decay_index = 0
-    #     # ---------------------------------
-    #
-    #     # Run for (3 actions * 20 = 60 iterations) or until human stops
-    #     for i in range(self.maxIter):
-    #         self.max_q_estimates.append(np.max(self.tableQ))
-    #         print(f'Max q value list updated: {str(self.max_q_estimates)}')
-    #
-    #         self.episode = self.episode + 1
-    #         print(f'Episode: {self.episode}')
-    #
-    #         print('eps: ' + str(eps))
-    #
-    #         # Take action
-    #         if action_selection_strategy == 'random':
-    #             # ---------------------------------------------
-    #             # Random strategy
-    #             self.action = self.selectAction()
-    #             # ---------------------------------------------
-    #         elif action_selection_strategy == 'harmonic-sequence-e-decay':
-    #             # ----------------------------------------------------
-    #             # Epsilon strategy with harmonic sequence decay part 1
-    #             self.action = self.epsilon_greedy_selection(eps)
-    #             # ----------------------------------------------------
-    #         elif action_selection_strategy == 'one-shot-e-decay':
-    #             # ----------------------------------------------
-    #             # Epsilon strategy with one shot decay part 1
-    #             self.action = self.epsilon_greedy_selection(eps)
-    #             # ----------------------------------------------
-    #
-    #         modified_img = self.apply_action(self.action, img)
-    #
-    #         # Get Human Reward Feedback, 1 for correct prediction, -1 for wrong prediction
-    #         probabilities_vector = cnn.model.predict(NumpyImg2Tensor(modified_img))
-    #         prediction = np.argmax(probabilities_vector)
-    #         emotion = next(key for key, val in classes.items() if val == prediction)
-    #         print(f'Is {emotion} the correct emotion?')
-    #
-    #         if action_selection_strategy == 'random':
-    #             scale_percent = 200  # percent of original size
-    #             width = int(modified_img.shape[1] * scale_percent / 100)
-    #             height = int(modified_img.shape[0] * scale_percent / 100)
-    #             dim = (width, height)
-    #             modified_img = cv2.resize(modified_img, dim, interpolation=cv2.INTER_CUBIC)
-    #             cv2.imshow('Modified image', modified_img)
-    #             cv2.waitKey(0)
-    #
-    #             print('\n3. Get human reward feedback')
-    #             print('Enter one of the following options: (1) for correct prediction, (-1) for wrong prediction')
-    #             self.r = input()
-    #             self.r = int(self.r)
-    #             self.rewards.append(self.r)
-    #             print(f'Reward list: {self.rewards}')
-    #
-    #         elif action_selection_strategy == 'harmonic-sequence-e-decay':
-    #             scale_percent = 200  # percent of original size
-    #             width = int(modified_img.shape[1] * scale_percent / 100)
-    #             height = int(modified_img.shape[0] * scale_percent / 100)
-    #             dim = (width, height)
-    #             modified_img = cv2.resize(modified_img, dim, interpolation=cv2.INTER_CUBIC)
-    #             cv2.imshow('Modified image', modified_img)
-    #             cv2.waitKey(0)
-    #
-    #             print('\n3. Get human reward feedback')
-    #             print('Enter one of the following options: (1) for correct prediction, (-1) for wrong prediction')
-    #             self.r = input()
-    #             self.r = int(self.r)
-    #             self.rewards.append(self.r)
-    #             print(f'Reward list: {self.rewards}')
-    #
-    #             # ----------------------------------------------------
-    #             # Epsilon strategy with harmonic sequence decay part 2
-    #             if self.r == 1:
-    #                 eps = 1 / (decay_index + 1) ** 2
-    #                 decay_index = decay_index + 1
-    #             # ----------------------------------------------------
-    #
-    #         elif action_selection_strategy == 'one-shot-e-decay':
-    #             # --------------------------------------------
-    #             # Epsilon strategy with one shot decay part 2
-    #             if self.r != 1:
-    #                 scale_percent = 200  # percent of original size
-    #                 width = int(modified_img.shape[1] * scale_percent / 100)
-    #                 height = int(modified_img.shape[0] * scale_percent / 100)
-    #                 dim = (width, height)
-    #                 modified_img = cv2.resize(modified_img, dim, interpolation=cv2.INTER_CUBIC)
-    #                 cv2.imshow('Modified image', modified_img)
-    #                 cv2.waitKey(0)
-    #
-    #                 print('\n3. Get human reward feedback')
-    #                 print('Enter one of the following options: (1) for correct prediction, (-1) for wrong prediction')
-    #                 self.r = input()
-    #                 self.r = int(self.r)
-    #                 self.rewards.append(self.r)
-    #                 print(f'Reward list: {self.rewards}')
-    #
-    #                 eps = 0
-    #             # --------------------------------------------
-    #
-    #         # Get state
-    #         state = self.define_state(self.r)
-    #
-    #         # print(f'State to pass in: {state} {type(state)}')
-    #         # print(f'Action to pass in: {self.action} {type(self.action)}')
-    #         # print(f'Reward to pass in: {self.r} {type(self.r)}')
-    #
-    #         # Choose Q-table and update
-    #         self.update_tableQ(state, self.action, self.r)
-    #
-    #         self.r = 0
-    #
-    #     self.cum_rewards = np.cumsum(self.rewards)
-    #     self.cum_rewards_all_images.append(self.cum_rewards)
-    #     self.max_q_estimates_all_images.append(self.max_q_estimates)
-
-    # By Chatgpt
-    def perform_iterative_Q_learning(self, cnn, img, classes, action_selection_strategy):
+    def perform_iterative_Q_learning(self, cnn, img, classes, action_selection_strategy, alpha, gamma):
         print(f'selected strategy: {action_selection_strategy}')
+        self.alpha = alpha
+        self.gamma = gamma
 
         print(f'Reset here')
         self.tableQ = np.zeros((len(self.states), len(self.actions)))
@@ -281,10 +155,23 @@ class HumanQLearning:
 
             self.episode = self.episode + 1
             print(f'Episode: {self.episode}')
-
             print('eps: ' + str(eps))
 
-            self.action = self.selectAction()  # Choose action based on some strategy
+            if action_selection_strategy == 'random':
+                # ---------------------------------------------
+                # Random strategy
+                self.action = self.selectAction()
+                # ---------------------------------------------
+            elif action_selection_strategy == 'harmonic-sequence-e-decay':
+                # ----------------------------------------------------
+                # Epsilon strategy with harmonic sequence decay part 1
+                self.action = self.epsilon_greedy_selection(eps)
+                # ----------------------------------------------------
+            elif action_selection_strategy == 'one-shot-e-decay':
+                # ----------------------------------------------
+                # Epsilon strategy with one shot decay part 1
+                self.action = self.epsilon_greedy_selection(eps)
+                # ----------------------------------------------
 
             modified_img = self.apply_action(self.action, img)
             self.r = action_feedback[self.action]
@@ -299,8 +186,7 @@ class HumanQLearning:
             if action_selection_strategy == 'harmonic-sequence-e-decay' and self.r == 1:
                 eps = 1 / (decay_index + 1) ** 2
                 decay_index = decay_index + 1
-
-            if action_selection_strategy == 'one-shot-e-decay' and self.r != 1:
+            elif action_selection_strategy == 'one-shot-e-decay' and self.r != 1:
                 eps = 0
 
         self.cum_rewards = np.cumsum(self.rewards)
