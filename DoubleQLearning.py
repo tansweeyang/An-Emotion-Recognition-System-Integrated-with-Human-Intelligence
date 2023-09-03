@@ -70,6 +70,8 @@ class DoubleQLearning:
             print(f'Rand action: {rand_action}')
             return int(rand_action)
         else:
+            self.average_q_table = np.mean([self.tableQ_A, self.tableQ_B], axis=0)
+            print(self.average_q_table)
             total = np.sum(self.average_q_table, axis=0)
             print(f'Total: {total}')
             best_action = np.argmax(total)
