@@ -272,6 +272,7 @@ for array_name in array_names:
     print(f"Loaded {array_name} from {file_path}")
 # --------------------------------------------------------------------------------
 
+# ---------------------------9) Print final results------------------------------------
 print('\nFinal Results TS_QL: ')
 print(f'Accuracy after TS_QL: {loaded_arrays["final_accuracy_after_TS_QL"]}')
 print(f'F1 score after TS_QL: {loaded_arrays["final_f1_score_after_TS_QL"]}')
@@ -288,7 +289,7 @@ print('\nFinal Results TS_DQL_HF: ')
 print(f'Accuracy after TS_DQL_HF: {loaded_arrays["final_accuracy_after_TS_DQL_HF"]}')
 print(f'F1 score after TS_DQL_HF: {loaded_arrays["final_f1_score_after_TS_DQL_HF"]}')
 
-# -------------------------------------------------9) Plot the graph ------------------------------------------------------------------------------------
+# -------------------------------------------------10) Plot the graph ------------------------------------------------------------------------------------
 episodes = range(1, 11)
 Plotter.plotDoubleQLearningPerformanceComparison(episodes,
                             loaded_arrays["average_max_Q_values_TS_QL_list"], loaded_arrays["std_dev_max_Q_values_TS_QL_list"], loaded_arrays["average_cum_r_TS_QL_list"], loaded_arrays["std_dev_cum_r_TS_QL_list"],
