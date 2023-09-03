@@ -23,7 +23,7 @@ train_splits = []
 test_splits = []
 validation_splits = []
 loaded_arrays = {}
-# ------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 
 if TRAIN_QL:
     # ---------------------------1) Load Splits------------------------------------------
@@ -170,13 +170,13 @@ if TRAIN_QL:
     random_strategy = 'random'
     harmonic_decay_strategy = 'harmonic-sequence-e-decay'
     one_shot_decay_strategy = 'one-shot-e-decay'
-    # ------------------------------------------------------------------------------------------------------------------
 
-    # -----------------------------------5) Train QL for Subplot (0,0) (0,1)--------------------------------------------
     TS_QL_random = QLearningModel()
     TS_QL_harmonic = QLearningModel()
     TS_QL_one_shot = QLearningModel()
+    # ------------------------------------------------------------------------------------------------------------------
 
+    # -----------------------------------5) Train QL for Subplot (0,0) (0,1)--------------------------------------------
     average_max_Q_values_TS_QL_list_random, std_dev_max_Q_values_TS_QL_list_random, average_cum_r_TS_QL_list_random, std_dev_cum_r_TS_QL_list_random, final_accuracy_before_TS_QL_random, final_f1_score_before_TS_QL_random, final_accuracy_after_TS_QL_random, final_f1_score_after_TS_QL_random = train_QL(TS_QL_random, 'TS-QL', random_strategy, 1.0, 0.0)
     average_max_Q_values_TS_QL_list_harmonic, std_dev_max_Q_values_TS_QL_list_harmonic, average_cum_r_TS_QL_list_harmonic, std_dev_cum_r_TS_QL_list_harmonic, final_accuracy_before_TS_QL_harmonic, final_f1_score_before_TS_QL_harmonic, final_accuracy_after_TS_QL_harmonic, final_f1_score_after_TS_QL_harmonic = train_QL(TS_QL_harmonic, 'TS-QL', harmonic_decay_strategy, 1.0, 0.0)
     average_max_Q_values_TS_QL_list_one_shot, std_dev_max_Q_values_TS_QL_list_one_shot, average_cum_r_TS_QL_list_one_shot, std_dev_cum_r_TS_QL_list_one_shot, final_accuracy_before_TS_QL_one_shot, final_f1_score_before_TS_QL_one_shot, final_accuracy_after_TS_QL_one_shot, final_f1_score_after_TS_QL_one_shot = train_QL(TS_QL_one_shot, 'TS-QL', one_shot_decay_strategy, 1.0, 0.0)

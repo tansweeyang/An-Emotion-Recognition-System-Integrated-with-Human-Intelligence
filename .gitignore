@@ -12,6 +12,7 @@ loss_lists/
 val_accuracy_lists/
 val_loss_lists/
 QL_Plot1_Train_Data/
+QL_Plot2_Train_Data/
 cnn_histories/
 Scripts/
 average_cum_r_lists/

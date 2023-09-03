@@ -255,14 +255,63 @@ def plotActionSelectionAnalysis(episodes,
     plt.show()
 
 def plotDoubleQLearningPerformanceComparison(episodes,
-                                             average_max_Q_values_TS_QL, std_dev_max_Q_values_TS_QL, average_cum_r_TS_QL, std_dev_cum_r_TS_QL,
-                                             average_max_Q_values_TS_DQL, std_dev__max_Q_values_TS_DQL, average_cum_r_TS_DQL, std_dev_cum_r_TS_DQL,
-                                             average_max_Q_values_TS_QL_HF, std_dev_max_Q_values_TS_QL_HF, average_cum_r_TS_QL_HF, std_dev_cum_r_TS_QL_HF,
-                                             average_max_Q_values_TS_DQL_HF, std_dev_max_Q_values_TS_DQL_HF, average_cum_r_TS_DQL_HF, std_dev_cum_r_TS_DQL_HF
+                                             average_max_Q_values_TS_QL_list, std_dev_max_Q_values_TS_QL_list, average_cum_r_TS_QL_list, std_dev_cum_r_TS_QL_list,
+                                             average_max_Q_values_TS_DQL_list, std_dev_max_Q_values_TS_DQL_list, average_cum_r_TS_DQL_list, std_dev_cum_r_TS_DQL_list,
+                                             average_max_Q_values_TS_QL_HF_list, std_dev_max_Q_values_TS_QL_HF_list, average_cum_r_TS_QL_HF_list, std_dev_cum_r_TS_QL_HF_list,
+                                             average_max_Q_values_TS_DQL_HF_list, std_dev_max_Q_values_TS_DQL_HF_list, average_cum_r_TS_DQL_HF_list, std_dev_cum_r_TS_DQL_HF_list
                                              ):
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(6, 6))
-    axes[0, 0].set_title('(a) Max Q-Values of Best Misclassified Image in TS-QL Averaged over 10 Folds', fontsize=8)
+    axes[0, 0].set_title('(a) Max Q-Values of Best Misclassified Image in TS-QL and TS-DQL Averaged over 10 Folds', fontsize=8)
+    axes[0, 0].set_xlabel('Episodes', fontsize=8)
+    axes[0, 0].set_ylabel('Max Q-values', fontsize=8)
+    axes[0, 0].plot(episodes, average_max_Q_values_TS_QL_list, color='red', label='Traditional QL')
+    axes[0, 0].fill_between(episodes, average_max_Q_values_TS_QL_list - std_dev_max_Q_values_TS_QL_list,
+                            average_max_Q_values_TS_QL_list + std_dev_max_Q_values_TS_QL_list, color='orange',
+                            alpha=0.2, label='_nolegend_')
+    axes[0, 0].plot(episodes, average_max_Q_values_TS_DQL_list, color='blue', label='Double QL')
+    axes[0, 0].fill_between(episodes, average_max_Q_values_TS_DQL_list - std_dev_max_Q_values_TS_DQL_list,
+                            average_max_Q_values_TS_DQL_list + std_dev_max_Q_values_TS_DQL_list, color='green',
+                            alpha=0.2, label='_nolegend_')
 
+    axes[0, 1].set_title('(b) Cumulative Rewards of Best Misclassified Image in TS-QL and TS-DQL Averaged over 10 Folds', fontsize=8)
+    axes[0, 1].set_xlabel('Episodes', fontsize=8)
+    axes[0, 1].set_ylabel('Max Q-values', fontsize=8)
+    axes[0, 1].plot(episodes, average_cum_r_TS_QL_list, color='red', label='Traditional QL')
+    axes[0, 1].fill_between(episodes, average_cum_r_TS_QL_list - std_dev_cum_r_TS_QL_list,
+                            average_cum_r_TS_QL_list + std_dev_cum_r_TS_QL_list, color='orange',
+                            alpha=0.2, label='_nolegend_')
+    axes[0, 1].plot(episodes, average_cum_r_TS_DQL_list, color='blue', label='Double QL')
+    axes[0, 1].fill_between(episodes, average_cum_r_TS_DQL_list - std_dev_cum_r_TS_DQL_list,
+                            average_cum_r_TS_DQL_list + std_dev_cum_r_TS_DQL_list, color='green',
+                            alpha=0.2, label='_nolegend_')
+
+    axes[1, 0].set_title('(c) Max Q-Values of Best Misclassified Image in TS-QL_HF and TS-DQL_HF Averaged over 10 Folds', fontsize=8)
+    axes[1, 0].set_xlabel('Episodes', fontsize=8)
+    axes[1, 0].set_ylabel('Max Q-values', fontsize=8)
+    axes[1, 0].plot(episodes, average_max_Q_values_TS_QL_HF_list, color='red', label='Traditional QL')
+    axes[1, 0].fill_between(episodes, average_max_Q_values_TS_QL_HF_list - std_dev_max_Q_values_TS_QL_HF_list,
+                            average_max_Q_values_TS_QL_HF_list + std_dev_max_Q_values_TS_QL_HF_list, color='red',
+                            alpha=0.2, label='_nolegend_')
+    axes[1, 0].plot(episodes, average_max_Q_values_TS_DQL_HF_list, color='blue', label='Double QL')
+    axes[1, 0].fill_between(episodes, average_max_Q_values_TS_DQL_HF_list - std_dev_max_Q_values_TS_DQL_HF_list,
+                            average_max_Q_values_TS_DQL_HF_list + std_dev_max_Q_values_TS_DQL_HF_list, color='blue',
+                            alpha=0.2, label='_nolegend_')
+
+    axes[1, 1].set_title('(d) Cumulative Rewards of Best Misclassified Image in TS-QL_HF and TS-DQL_HF Averaged over 10 Folds', fontsize=8)
+    axes[1, 1].set_xlabel('Episodes', fontsize=8)
+    axes[1, 1].set_ylabel('Max Q-values', fontsize=8)
+    axes[1, 1].plot(episodes, average_cum_r_TS_QL_HF_list, color='red', label='Traditional QL')
+    axes[1, 1].fill_between(episodes, average_cum_r_TS_QL_HF_list - std_dev_cum_r_TS_QL_HF_list,
+                            average_cum_r_TS_QL_HF_list + std_dev_cum_r_TS_QL_HF_list, color='red',
+                            alpha=0.2, label='_nolegend_')
+    axes[1, 1].plot(episodes, average_cum_r_TS_DQL_HF_list, color='blue', label='Double QL')
+    axes[1, 1].fill_between(episodes, average_cum_r_TS_DQL_HF_list - std_dev_cum_r_TS_DQL_HF_list,
+                            average_cum_r_TS_DQL_HF_list + std_dev_cum_r_TS_DQL_HF_list, color='green',
+                            alpha=0.2, label='_nolegend_')
+
+    plt.figlegend(['Traditional QL', 'Double QL'], loc='lower center', fontsize=8)
+    plt.tight_layout()
+    plt.show()
 
 
 

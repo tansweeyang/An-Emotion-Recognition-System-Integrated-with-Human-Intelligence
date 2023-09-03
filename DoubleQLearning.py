@@ -60,6 +60,9 @@ class DoubleQLearning:
         translated = cv2.warpAffine(picture, self.M_translation_2, (cols, rows))
         return np.array(translated)
 
+    def selectAction(self):
+        return randrange(len(self.actions))
+
     def epsilon_greedy_selection(self, eps):
         p = np.random.random()
         if p < eps:
@@ -67,7 +70,7 @@ class DoubleQLearning:
             print(f'Rand action: {rand_action}')
             return int(rand_action)
         else:
-            total = np.sum(self.tableQ, axis=0)
+            total = np.sum(self.average_q_table, axis=0)
             print(f'Total: {total}')
             best_action = np.argmax(total)
             print(f'Best action: {best_action}')
@@ -79,6 +82,12 @@ class DoubleQLearning:
     def apply_action(self, action, img):
         return self.actions[action](img)
 
+    def get_features_metric(self, features):
+        return np.std(features)
+
+    def get_reward(self, m1, m2):
+        return 1 if m2 > m1 else -1
+
     def define_state(self, reward):
         print("State chosen: " + str(0 if reward > 0 else 1))
         return 0 if reward > 0 else 1
@@ -89,6 +98,32 @@ class DoubleQLearning:
         self.tableQ[state][action] = self.tableQ[state][action] + (
                 self.alpha * (reward + self.gamma * max(self.tableQ[state]) - self.tableQ[state][action]))
         print(f'New Table Q(s,a) value: {self.tableQ[state][action]}')
+
+    def update_tableQ_A(self, state, action, reward):
+        a_star = int(np.argmax(self.tableQ_A[state]))
+        # print(f'{self.tableQ_A[state][action]} = {self.tableQ_A[state][action]} + {self.alpha} * ({reward} + ({self.gamma} * {self.tableQ_B[state][a_star]}) - {self.tableQ_A[state][action]})')
+        self.tableQ_A[state][action] = self.tableQ_A[state][action] + self.alpha * (reward + (self.gamma * self.tableQ_B[state][a_star]) - self.tableQ_A[state][action])
+        # print(f'New Table A Q(s,a) value: {self.tableQ_A[state][action]}')
+
+    def update_TableQ_B(self, state, action, reward):
+        b_star = int(np.argmax(self.tableQ_B[state]))
+        # print(f'{self.tableQ_B[state][action]} = {self.tableQ_B[state][action]} + {self.alpha} * ({reward} + ({self.gamma} * {self.tableQ_A[state][b_star]}) - {self.tableQ_B[state][action]})')
+        self.tableQ_B[state][action] = self.tableQ_B[state][action] + self.alpha * (reward + (self.gamma * self.tableQ_A[state][b_star]) - self.tableQ_B[state][action])
+        # print(f'New Table B Q(s,a) value: {self.tableQ_B[state][action]}')
+
+    def get_best_max_Q_values_one_img(self):
+        array_totals = [np.sum(arr) for arr in self.max_q_estimates_all_images]
+        highest_total_index = np.argmax(array_totals)
+        best_q_estimates_list = self.max_q_estimates_all_images[highest_total_index]
+
+        return best_q_estimates_list
+
+    def get_best_max_cum_r_one_img(self):
+        array_totals = [np.sum(arr) for arr in self.cum_rewards_all_images]
+        highest_total_index = np.argmax(array_totals)
+        best_cum_r_list = self.cum_rewards_all_images[highest_total_index]
+
+        return best_cum_r_list
 
     def perform_iterative_Q_learning(self, cnn, img, classes, action_selection_strategy, alpha, gamma):
         print(f'selected strategy: {action_selection_strategy}')
@@ -116,7 +151,7 @@ class DoubleQLearning:
 
         # Run for (3 actions * 20 = 60 iterations) or until human stops
         for i in range(self.maxIter):
-            self.max_q_estimates.append(np.max(self.tableQ))
+            self.max_q_estimates.append(np.max(self.average_q_table))
             print(f'Max q value list updated: {str(self.max_q_estimates)}')
 
             self.episode = self.episode + 1
@@ -165,7 +200,7 @@ class DoubleQLearning:
         self.max_q_estimates_all_images.append(self.max_q_estimates)
 
     def choose_optimal_action(self):
-        total = np.sum(self.tableQ, axis=0)
+        total = np.sum(self.average_q_table, axis=0)
         best_action = np.argmax(total)
         print(f'Optimal action: {best_action}')
         return best_action
