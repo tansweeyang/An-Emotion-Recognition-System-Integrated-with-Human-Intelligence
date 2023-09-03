@@ -29,7 +29,7 @@ session = tf.compat.v1.Session(config=config)
 LOAD_DATA = False
 TRAIN_NETWORK = False
 
-TRAIN_QL = True
+TRAIN_QL = False
 LIMIT = 10
 ACTION_NAMES = ['rotate +90', 'rotate +180', 'diagonal translation']
 networkName = "Inception"
@@ -301,6 +301,69 @@ print(f'InceptionV3: {np.mean(test_loss_list_inception)} ± {np.std(test_loss_li
 print(f'ResNet50: {np.mean(test_loss_list_resNet)} ± {np.std(test_loss_list_resNet)}')
 print(f'MobileNetV2: {np.mean(test_loss_list_mobileNet)} ± {np.std(test_loss_list_mobileNet)}')
 
+# --------Plot cnn final f1 score-----------
+f1_scores_inception = []
+f1_scores_resNet = []
+f1_scores_mobileNet = []
+
+for i in range(num_splits):
+    test_split = test_splits[i]
+    X_test = test_split[0]
+    y_test = test_split[1]
+
+    predicted_labels_inception = []
+    predicted_labels_resNet = []
+    predicted_labels_mobileNet = []
+
+    for img, label in zip(X_test, y_test):
+        probabilities_vector_inception = inception_models[i].predict(NumpyImg2Tensor(img))
+        predictedLabel_inception = np.argmax(probabilities_vector_inception)
+        predicted_labels_inception.append(predictedLabel_inception)
+
+        probabilities_vector_resNet = resNet_models[i].predict(NumpyImg2Tensor(img))
+        predictedLabel_resNet = np.argmax(probabilities_vector_resNet)
+        predicted_labels_resNet.append(predictedLabel_resNet)
+
+        probabilities_vector_mobileNet = mobileNet_models[i].predict(NumpyImg2Tensor(img))
+        predictedLabel_mobileNet = np.argmax(probabilities_vector_mobileNet)
+        predicted_labels_mobileNet.append(predictedLabel_mobileNet)
+
+    f1_score_inception = f1_score(y_test, predicted_labels_inception, average="macro")
+    f1_score_resNet = f1_score(y_test, predicted_labels_resNet, average="macro")
+    f1_score_mobileNet = f1_score(y_test, predicted_labels_mobileNet, average="macro")
+
+    f1_scores_inception.append(f1_score_inception)
+    f1_scores_resNet.append(f1_score_resNet)
+    f1_scores_mobileNet.append(f1_score_mobileNet)
+
+average_f1_score_inception = np.mean(f1_scores_inception)
+std_dev_f1_score_inception = np.std(f1_scores_inception)
+
+average_f1_score_resNet = np.mean(f1_scores_resNet)
+std_dev_f1_score_resNet = np.std(f1_scores_resNet)
+
+average_f1_score_mobileNet = np.mean(f1_scores_mobileNet)
+std_dev_f1_score_mobileNet = np.std(f1_scores_mobileNet)
+
+print(f'InceptionV3: {average_f1_score_inception} ± {std_dev_f1_score_inception}')
+print(f'ResNet50: {average_f1_score_resNet} ± {std_dev_f1_score_resNet}')
+print(f'MobileNetV2: {average_f1_score_mobileNet} ± {std_dev_f1_score_mobileNet}')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Accuracy
 # Inception (Plot 0,0)
 average_accuracy_list_inception_model = np.mean(accuracy_lists_inception_model, axis=0)
@@ -351,272 +414,4 @@ Plotter.plot_model_history(average_accuracy_list_inception_model, average_val_ac
                             std_deviation_loss_list_resNet_model, std_deviation_val_loss_list_resNet_model,
                             average_loss_list_mobileNet_model, average_val_loss_list_mobileNet_model,
                             std_deviation_loss_list_mobileNet_model, std_deviation_val_loss_list_mobileNet_model)
-
-
-
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-# ----------RL execution--------------
-inception_model_object = ConvolutionalNeuralNetworks('Inception')
-X_train = train_splits[0][0]
-image_shape = X_train[0].shape
-inception_model_object.create_model_architecture(image_shape)
-
-TS_QL = QLearningModel()
-TS_QL_HF = HumanQLearning()
-TS_DQL_HF = HumanDoubleQLearning()
-
-def train_QL(QL_network, QL_network_name, action_selection_strategy):
-    max_Q_values_lists = []
-    cum_r_lists = []
-
-    for i in range(2): # Here-1
-        test_split = test_splits[i]
-        X_test = test_split[0]
-        y_test = test_split[1]
-
-        for img, label in zip(X_test, y_test):
-            print(f'Prediction using model: {i}')
-
-            # Prediction before applying action
-            probabilities_vector_before_applying_action = inception_models[i].predict(NumpyImg2Tensor(img))
-            predictedLabel_before_applying_action = np.argmax(probabilities_vector_before_applying_action)
-
-            if (predictedLabel_before_applying_action != label):
-                QL_network.perform_iterative_Q_learning(inception_model_object, img, classes, action_selection_strategy)
-                optimal_action = QL_network.choose_optimal_action()
-                corrected_img = QL_network.apply_action(optimal_action, img)
-                probabilities_vector_after_applying_action = inception_models[i].predict(NumpyImg2Tensor(corrected_img))
-                predictedLabel_after_applying_action = np.argmax(probabilities_vector_after_applying_action)
-
-        # Output of one split [1,2,3,4,5]
-        max_Q_values_TS_QL_list = QL_network.max_q_estimates_all_images[0]
-        cum_r_TS_QL_list = QL_network.cum_rewards_all_images[0]
-
-        max_Q_values_lists.append(max_Q_values_TS_QL_list)
-        cum_r_lists.append(cum_r_TS_QL_list)
-
-    average_max_Q_values_list = np.mean(max_Q_values_lists, axis=0)
-    print(f'Average max Q values {QL_network_name} list: {average_max_Q_values_list}')
-    std_dev_max_Q_values_list = np.std(max_Q_values_lists, axis=0)
-    print(f'Std dev max Q values {QL_network_name} list: {std_dev_max_Q_values_list}')
-
-    average_cum_r_list = np.mean(cum_r_lists, axis=0)
-    print(f'Average cumulative reward {QL_network_name} list: {average_cum_r_list}')
-    std_dev_cum_r_list = np.std(cum_r_lists, axis=0)
-    print(f'Std dev cumulative reward {QL_network_name} list: {std_dev_cum_r_list}')
-
-    return average_max_Q_values_list, std_dev_max_Q_values_list, average_cum_r_list, std_dev_cum_r_list
-
-# Arrays to save in RL (For plot 1)
-average_max_Q_values_TS_QL_list = []
-std_dev_max_Q_values_TS_QL_list = []
-average_max_Q_values_TS_QL_HF_list = []
-std_dev_max_Q_values_TS_QL_HF_list = []
-average_max_Q_values_TS_DQL_HF_list = []
-std_dev_max_Q_values_TS_DQL_HF_list = []
-
-# Arrays to save in RL (For plot 1 & 2)
-average_cum_r_TS_QL_list = []
-std_dev_cum_r_TS_QL_list = []
-average_cum_r_TS_QL_HF_list = []
-std_dev_cum_r_TS_QL_HF_list = []
-average_cum_r_TS_DQL_HF_list = []
-std_dev_cum_r_TS_DQL_HF_list = []
-
-random_strategy = 'random'
-harmonic_decay_strategy = 'harmonic-sequence-e-decay'
-one_shot_decay_strategy = 'one-shot-e-decay'
-
-# For first plot
-average_max_Q_values_TS_QL_list_random, std_dev_max_Q_values_TS_QL_list_random, average_cum_r_TS_QL_list_random, std_dev_cum_r_TS_QL_list_random = train_QL(TS_QL, 'TS-QL', random_strategy)
-average_max_Q_values_TS_QL_list_harmonic, std_dev_max_Q_values_TS_QL_list_harmonic, average_cum_r_TS_QL_list_harmonic, std_dev_cum_r_TS_QL_list_harmonic = train_QL(TS_QL, 'TS-QL', harmonic_decay_strategy)
-average_max_Q_values_TS_QL_list_one_shot, std_dev_max_Q_values_TS_QL_list_one_shot, average_cum_r_TS_QL_list_one_shot, std_dev_cum_r_TS_QL_list_one_shot = train_QL(TS_QL, 'TS-QL', one_shot_decay_strategy)
-average_max_Q_values_TS_QL_HF_list_random, std_dev_max_Q_values_TS_QL_HF_list_random, average_cum_r_TS_QL_HF_list_random, std_dev_cum_r_TS_QL_HF_list_random = train_QL(TS_QL_HF, 'TS-QL-HF', random_strategy)
-average_max_Q_values_TS_QL_HF_list_harmonic, std_dev_max_Q_values_TS_QL_HF_list_harmonic, average_cum_r_TS_QL_HF_list_harmonic, std_dev_cum_r_TS_QL_HF_list_harmonic = train_QL(TS_QL_HF, 'TS-QL-HF', harmonic_decay_strategy)
-average_max_Q_values_TS_QL_HF_list_one_shot, std_dev_max_Q_values_TS_QL_HF_list_one_shot, average_cum_r_TS_QL_HF_list_one_shot, std_dev_cum_r_TS_QL_HF_list_one_shot = train_QL(TS_QL_HF, 'TS-QL-HF', one_shot_decay_strategy)
-
-print(f'average_max_Q_values_TS_QL_list_random: {average_max_Q_values_TS_QL_list_random}')
-print(f'std_dev_max_Q_values_TS_QL_list_random: {std_dev_max_Q_values_TS_QL_list_random}')
-print(f'average_max_Q_values_TS_QL_list_harmonic: {average_max_Q_values_TS_QL_list_harmonic}')
-print(f'std_dev_max_Q_values_TS_QL_list_harmonic: {std_dev_max_Q_values_TS_QL_list_harmonic}')
-print(f'average_max_Q_values_TS_QL_list_one_shot: {average_max_Q_values_TS_QL_list_one_shot}')
-print(f'std_dev_max_Q_values_TS_QL_list_one_shot: {std_dev_max_Q_values_TS_QL_list_one_shot}')
-
-# Plot first plot
-Plotter.plotActionSelectionAnalysis(range(1,21),
-                                    average_max_Q_values_TS_QL_list_random, std_dev_max_Q_values_TS_QL_list_random,
-                                    average_max_Q_values_TS_QL_list_harmonic, std_dev_max_Q_values_TS_QL_list_harmonic,
-                                    average_max_Q_values_TS_QL_list_one_shot, std_dev_max_Q_values_TS_QL_list_one_shot,
-                                    average_max_Q_values_TS_QL_HF_list_random, std_dev_max_Q_values_TS_QL_HF_list_random,
-                                    average_max_Q_values_TS_QL_HF_list_harmonic, std_dev_max_Q_values_TS_QL_HF_list_harmonic,
-                                    average_max_Q_values_TS_QL_HF_list_one_shot, std_dev_max_Q_values_TS_QL_HF_list_one_shot)
-
-# For second plot
-average_max_Q_values_TS_DQL_HF_list_one_shot, std_dev_max_Q_values_TS_DQL_HF_list_one_shot, average_cum_r_TS_DQL_HF_list_one_shot, std_dev_cum_r_TS_DQL_HF_list_one_shot = train_QL(TS_DQL_HF, 'TS-DQL-HF', one_shot_decay_strategy)
-
-
-print(f'average_max_Q_values_TS_QL_list: {average_max_Q_values_TS_QL_list}')
-print(f'std_dev_max_Q_values_TS_QL_list: {std_dev_max_Q_values_TS_QL_list}')
-print(f'average_cum_r_TS_QL_list: {average_cum_r_TS_QL_list}')
-print(f'std_dev_cum_r_TS_QL_list: {std_dev_cum_r_TS_QL_list}')
-
-print(f'average_max_Q_values_TS_QL_HF_list: {average_max_Q_values_TS_QL_HF_list}')
-print(f'std_dev_max_Q_values_TS_QL_HF_list: {std_dev_max_Q_values_TS_QL_HF_list}')
-print(f'average_cum_r_TS_QL_HF_list: {average_cum_r_TS_QL_HF_list}')
-print(f'std_dev_cum_r_TS_QL_HF_list: {std_dev_cum_r_TS_QL_HF_list}')
-
-print(f'average_max_Q_values_TS_DQL_HF_list: {average_max_Q_values_TS_DQL_HF_list}')
-print(f'std_dev_max_Q_values_TS_DQL_HF_list: {std_dev_max_Q_values_TS_DQL_HF_list}')
-print(f'average_cum_r_TS_DQL_HF_list: {average_cum_r_TS_DQL_HF_list}')
-print(f'std_dev_cum_r_TS_DQL_HF_list: {std_dev_cum_r_TS_DQL_HF_list}')
-
-Plotter.plot_QL_history(range(1, 21),
-                        average_max_Q_values_TS_QL_list, std_dev_max_Q_values_TS_QL_list, average_cum_r_TS_QL_list, std_dev_cum_r_TS_QL_list,
-                        average_max_Q_values_TS_QL_HF_list, std_dev_max_Q_values_TS_QL_HF_list, average_cum_r_TS_QL_HF_list, std_dev_cum_r_TS_QL_HF_list,
-                        average_max_Q_values_TS_DQL_HF_list, std_dev_max_Q_values_TS_DQL_HF_list, average_cum_r_TS_DQL_HF_list, std_dev_cum_r_TS_DQL_HF_list)
-
-# ----------RL execution--------------
-t4 = time.time()
-TS_QL = QLearningModel()
-TS_QL_HF = HumanQLearning()
-TS_DQL_HF = HumanDoubleQLearning()
-statControllerRl = StatisticsController(classes, len(ACTION_NAMES))
-verbose = True
-
-# Plot Learning Curve
-misclassified_num = 0
-
-with open('q_value_per_episode.csv', 'w', encoding='UTF8', newline='') as f:
-    writer = csv.writer(f)
-
-    header = ['episodes', 'q-values']
-
-    # write the header
-    writer.writerow(header)
-
-for img, label in zip(X_test, y_test):
-    no_lr_probabilities_vector = cnn.model.predict(NumpyImg2Tensor(img))
-    predictedLabel = np.argmax(no_lr_probabilities_vector)
-    statControllerNoRl.predictedLabels.append(predictedLabel)
-
-    # Interactive QL
-    if predictedLabel != label:
-        misclassified_num += 1
-
-        TS_QL_HF.interactive_q_learning_human_only(cnn, img, statControllerRl, classes)
-        optimal_action = TS_QL_HF.choose_optimal_action()
-        statControllerRl.updateOptimalActionsStats(optimal_action)
-        corrected_img = TS_QL_HF.apply_action(optimal_action, img)
-        probabilities_vector = cnn.model.predict(NumpyImg2Tensor(corrected_img))
-        statControllerRl.predictedLabels.append(np.argmax(probabilities_vector))
-
-        TS_DQL_HF.interactive_double_q_learning_human_only(cnn, img, statControllerRl, classes)
-        optimal_action = TS_DQL_HF.choose_optimal_action()
-        statControllerRl.updateOptimalActionsStats(optimal_action)
-        corrected_img = TS_DQL_HF.apply_action(optimal_action, img)
-        probabilities_vector = cnn.model.predict(NumpyImg2Tensor(corrected_img))
-        statControllerRl.predictedLabels.append(np.argmax(probabilities_vector))
-
-        TS_QL.perform_iterative_Q_learning(cnn, img, statControllerRl)
-        optimal_action = TS_QL.choose_optimal_action()
-        statControllerRl.updateOptimalActionsStats(optimal_action)
-        corrected_img = TS_QL.apply_action(optimal_action, img)
-        probabilities_vector = cnn.model.predict(NumpyImg2Tensor(corrected_img))
-        statControllerRl.predictedLabels.append(np.argmax(probabilities_vector))
-    else:
-        statControllerRl.predictedLabels.append(predictedLabel)
-
-# 1. Plot CNN history
-plot_history(dl, networkName, statControllerNoRl.trainingHistory)
-
-# 2. Plot QL learning curve
-fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(6, 6))
-
-q_values_all_images_ts_ql_hf = TS_QL_HF.q_estimates_all_images
-q_values_all_images_ts_dql_hf = TS_DQL_HF.q_estimates_all_images
-q_values_all_images_ts_ql = TS_QL.q_estimates_all_images
-
-cum_rewards_all_images_ts_ql_hf = TS_QL_HF.cum_rewards_all_images
-cum_rewards_all_images_ts_dql_hf = TS_DQL_HF.cum_rewards_all_images
-cum_rewards_all_images_ts_ql = TS_QL.cum_rewards_all_images
-episodes = range(1, TS_QL.maxIter+1)
-
-# Plot Q-values
-axes[0, 0].set_title('(a) Image 1')
-axes[0, 0].set_xlabel('Episodes')
-axes[0, 0].set_ylabel('Average Q-values')
-axes[0, 0].plot(episodes, q_values_all_images_ts_dql_hf[0], color='red', label='TS-DQL-HF')
-axes[0, 0].plot(episodes, q_values_all_images_ts_ql_hf[0], linestyle='dashed', color='blue', label='TS-QL-HF')
-# axes[0, 0].plot(episodes, q_values_all_images_ts_ql[0], color='blue', label='TS-QL')
-
-axes[0, 1].set_title('(b) Image 2')
-axes[0, 1].set_xlabel('Episodes')
-axes[0, 1].set_ylabel('Average Q-values')
-axes[0, 1].plot(episodes, q_values_all_images_ts_dql_hf[1], color='red', label='TS-DQL-HF')
-axes[0, 1].plot(episodes, q_values_all_images_ts_ql_hf[1], linestyle='dashed', color='blue', label='TS-QL-HF')
-# axes[0, 1].plot(episodes, q_values_all_images_ts_ql[1], color='blue', label='TS-QL')
-
-axes[0, 2].set_title('(c) Image 3')
-axes[0, 2].set_xlabel('Episodes')
-axes[0, 2].set_ylabel('Average Q-values')
-axes[0, 2].plot(episodes, q_values_all_images_ts_dql_hf[2], color='red', label='TS-DQL-HF')
-axes[0, 2].plot(episodes, q_values_all_images_ts_ql_hf[2], linestyle='dashed', color='blue', label='TS-QL-HF')
-# axes[0, 2].plot(episodes, q_values_all_images_ts_ql[2], color='blue', label='TS-QL')
-
-axes[1, 0].set_title('(d) Image 1')
-axes[1, 0].set_xlabel('Episodes')
-axes[1, 0].set_ylabel('Cumulative Rewards')
-axes[1, 0].plot(episodes, cum_rewards_all_images_ts_dql_hf[0], color='red', label='TS-DQL-HF')
-axes[1, 0].plot(episodes, cum_rewards_all_images_ts_ql_hf[0], linestyle='dashed', color='blue', label='TS-QL-HF')
-# axes[1, 0].plot(episodes, cum_rewards_all_images_ts_ql[0], color='blue', label='TS-QL')
-
-axes[1, 1].set_title('(e) Image 2')
-axes[1, 1].set_xlabel('Episodes')
-axes[1, 1].set_ylabel('Cumulative Rewards')
-axes[1, 1].plot(episodes, cum_rewards_all_images_ts_dql_hf[1], color='red', label='TS-DQL-HF')
-axes[1, 1].plot(episodes, cum_rewards_all_images_ts_ql_hf[1], linestyle='dashed', color='blue', label='TS-QL-HF')
-# axes[1, 1].plot(episodes, cum_rewards_all_images_ts_ql[1], color='blue', label='TS-QL')
-
-axes[1, 2].set_title('(f) Image 3')
-axes[1, 2].set_xlabel('Episodes')
-axes[1, 2].set_ylabel('Cumulative Rewards')
-axes[1, 2].plot(episodes, cum_rewards_all_images_ts_dql_hf[2], color='red', label='TS-DQL-HF')
-axes[1, 2].plot(episodes, cum_rewards_all_images_ts_ql_hf[2], linestyle='dashed', color='blue', label='TS-QL-HF')
-# axes[1, 2].plot(episodes, cum_rewards_all_images_ts_ql[2], color='blue', label='TS-QL')
-
-plt.figlegend(['TS-DQL-HF', 'TS-QL-HF'], loc='lower center')
-plt.tight_layout()
-plt.show()
-
-print("RL execution time: " + str(time.time() - t4))
-
-# 2. Print Action Stats
-plot_actions_stats(dl, networkName, ACTION_NAMES, statControllerRl.allActionsStats, "allActionsRL")
-plot_actions_stats(dl, networkName, ACTION_NAMES, statControllerRl.optimalActionsStats, "optimalActionsRL")
-
-# 3. Print Confusion Matrix
-conf_matrix_no_RL = confusion_matrix(y_test, statControllerNoRl.predictedLabels)
-conf_matrix_RL = confusion_matrix(y_test, statControllerRl.predictedLabels)
-plot_conf_matrix(dl, networkName, conf_matrix_no_RL, classes, "NoRL")
-plot_conf_matrix(dl, networkName, conf_matrix_RL, classes, "RL")
-
-statControllerNoRl.f1Score = f1_score(y_test, statControllerNoRl.predictedLabels, average="macro")
-statControllerNoRl.precision = precision_score(y_test, statControllerNoRl.predictedLabels, average="macro")
-statControllerNoRl.recall = recall_score(y_test, statControllerNoRl.predictedLabels, average="macro")
-statControllerNoRl.report = classification_report(y_test, statControllerNoRl.predictedLabels)
-statControllerNoRl.accuracy = accuracy_score(y_test, statControllerNoRl.predictedLabels)
-
-statControllerRl.f1Score = f1_score(y_test, statControllerRl.predictedLabels, average="macro")
-statControllerRl.precision = precision_score(y_test, statControllerRl.predictedLabels, average="macro")
-statControllerRl.recall = recall_score(y_test, statControllerRl.predictedLabels, average="macro")
-statControllerRl.report = classification_report(y_test, statControllerRl.predictedLabels)
-statControllerRl.accuracy = accuracy_score(y_test, statControllerRl.predictedLabels)
-
-# 4. Print Report (f1Score, precision, recall, accuracy)
-print_classification_details(statControllerNoRl)
-print_classification_details(statControllerRl)
-dl.save_details(statControllerNoRl, networkName, "NoRL")
-dl.save_details(statControllerRl, networkName, "RL")

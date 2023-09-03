@@ -254,6 +254,18 @@ def plotActionSelectionAnalysis(episodes,
     plt.tight_layout()
     plt.show()
 
+def plotDoubleQLearningPerformanceComparison(episodes,
+                                             average_max_Q_values_TS_QL, std_dev_max_Q_values_TS_QL, average_cum_r_TS_QL, std_dev_cum_r_TS_QL,
+                                             average_max_Q_values_TS_DQL, std_dev__max_Q_values_TS_DQL, average_cum_r_TS_DQL, std_dev_cum_r_TS_DQL,
+                                             average_max_Q_values_TS_QL_HF, std_dev_max_Q_values_TS_QL_HF, average_cum_r_TS_QL_HF, std_dev_cum_r_TS_QL_HF,
+                                             average_max_Q_values_TS_DQL_HF, std_dev_max_Q_values_TS_DQL_HF, average_cum_r_TS_DQL_HF, std_dev_cum_r_TS_DQL_HF
+                                             ):
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(6, 6))
+    axes[0, 0].set_title('(a) Max Q-Values of Best Misclassified Image in TS-QL Averaged over 10 Folds', fontsize=8)
+
+
+
+
 def plot_actions_stats(dataLoader, networkName, actions, stats, filename):
     plt.bar(actions, height=stats)
     plt.title('actions statistics')

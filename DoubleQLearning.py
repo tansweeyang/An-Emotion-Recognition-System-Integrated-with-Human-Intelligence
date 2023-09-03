@@ -2,7 +2,6 @@ from random import randrange
 from scipy.ndimage.interpolation import rotate
 
 import numpy as np
-import pandas as pd
 import cv2
 
 
