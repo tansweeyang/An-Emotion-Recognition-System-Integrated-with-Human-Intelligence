@@ -18,7 +18,7 @@ config = tf.compat.v1.ConfigProto(
 session = tf.compat.v1.Session(config=config)
 
 # ---------------------------1) Program Variables--------------------------------------
-TRAIN_QL = True
+TRAIN_QL = False
 num_splits = 10
 
 train_splits = []

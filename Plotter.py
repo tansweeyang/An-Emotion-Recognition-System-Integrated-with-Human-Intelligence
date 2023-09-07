@@ -275,7 +275,7 @@ def plotDoubleQLearningPerformanceComparison(episodes,
 
     axes[0, 1].set_title('(b) Cumulative Rewards of Best Misclassified Image in TS-QL and TS-DQL Averaged over 10 Folds', fontsize=8)
     axes[0, 1].set_xlabel('Episodes', fontsize=8)
-    axes[0, 1].set_ylabel('Max Q-values', fontsize=8)
+    axes[0, 1].set_ylabel('Cumulative Rewards', fontsize=8)
     axes[0, 1].plot(episodes, average_cum_r_TS_QL_list, color='red', label='Traditional QL')
     axes[0, 1].fill_between(episodes, average_cum_r_TS_QL_list - std_dev_cum_r_TS_QL_list,
                             average_cum_r_TS_QL_list + std_dev_cum_r_TS_QL_list, color='orange',
@@ -285,7 +285,7 @@ def plotDoubleQLearningPerformanceComparison(episodes,
                             average_cum_r_TS_DQL_list + std_dev_cum_r_TS_DQL_list, color='green',
                             alpha=0.2, label='_nolegend_')
 
-    axes[1, 0].set_title('(c) Max Q-Values of Best Misclassified Image in TS-QL_HF and TS-DQL_HF Averaged over 10 Folds', fontsize=8)
+    axes[1, 0].set_title('(c) Max Q-Values of Best Misclassified Image in TS-QL-HF and TS-DQL-HF Averaged over 10 Folds', fontsize=8)
     axes[1, 0].set_xlabel('Episodes', fontsize=8)
     axes[1, 0].set_ylabel('Max Q-values', fontsize=8)
     axes[1, 0].plot(episodes, average_max_Q_values_TS_QL_HF_list, color='red', label='Traditional QL')
@@ -297,9 +297,9 @@ def plotDoubleQLearningPerformanceComparison(episodes,
                             average_max_Q_values_TS_DQL_HF_list + std_dev_max_Q_values_TS_DQL_HF_list, color='blue',
                             alpha=0.2, label='_nolegend_')
 
-    axes[1, 1].set_title('(d) Cumulative Rewards of Best Misclassified Image in TS-QL_HF and TS-DQL_HF Averaged over 10 Folds', fontsize=8)
+    axes[1, 1].set_title('(d) Cumulative Rewards of Best Misclassified Image in TS-QL-HF and TS-DQL-HF Averaged over 10 Folds', fontsize=8)
     axes[1, 1].set_xlabel('Episodes', fontsize=8)
-    axes[1, 1].set_ylabel('Max Q-values', fontsize=8)
+    axes[1, 1].set_ylabel('Cumulative Rewards', fontsize=8)
     axes[1, 1].plot(episodes, average_cum_r_TS_QL_HF_list, color='red', label='Traditional QL')
     axes[1, 1].fill_between(episodes, average_cum_r_TS_QL_HF_list - std_dev_cum_r_TS_QL_HF_list,
                             average_cum_r_TS_QL_HF_list + std_dev_cum_r_TS_QL_HF_list, color='red',
