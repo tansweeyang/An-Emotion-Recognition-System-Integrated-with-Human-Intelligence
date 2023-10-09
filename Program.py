@@ -258,6 +258,16 @@ else:
         mobileNet_model = load_model(f'models/mobileNet_model_fold_{i}.h5')
         mobileNet_models.append(mobileNet_model)
 
+    print(inception_models[0].summary())
+    print(resNet_models[0].summary())
+    print(mobileNet_models[0].summary())
+
+    total_params = sum(p.numel() for p in inception_models[0].trainable_variables)
+    print("Total number of neurons in InceptionV3:", total_params)
+
+    total_params = sum(p.numel() for p in inception_models[0].trainable_variables)
+    print("Total number of neurons in ResNet50:", total_params)
+
 # --------CNN training done------------
 
 # --------Plot cnn histories-----------
