@@ -3,7 +3,6 @@ tmp/
 models/
 dataset/
 out/
-documents/
 venv/
 splits/
 splitDatasets75/
