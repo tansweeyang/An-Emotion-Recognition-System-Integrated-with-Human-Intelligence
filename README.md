@@ -5,10 +5,10 @@ Introduces a enhanced approach called two-state Q-learning with human feedback (
 
 ## Publications 
 - Final year project report: https://github.com/tansweeyang/An-Emotion-Recognition-System-Integrated-with-Human-Intelligence/blob/75cbc1d33f7cc33245475dbf1f9e036436d7afe1/documents/SE_1904180_FYP%20report%20-%20TanSweeYang.pdf
-- http://example.com/file.pdf
+- Research paper: http://example.com/file.pdf
 
 ## Key Contributions
-- Research paper: Design TS-QL-HF, which incorporates human feedback as an alternative reward function for TS-QL, for enhancing the quality of rewards
+- Design TS-QL-HF, which incorporates human feedback as an alternative reward function for TS-QL, for enhancing the quality of rewards
 - Develop an action selection strategy and fine-tune hyperparameters for improving the convergence rate while operating in deterministic environments
 - Separate the learning of unrelated policies among multiple agents for improving convergence
 - Investigate the use of DQL in deterministic environments.
