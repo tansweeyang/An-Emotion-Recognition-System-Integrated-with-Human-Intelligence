@@ -11,6 +11,7 @@ Introduces a enhanced approach called two-state Q-learning with human feedback (
 
 ## 🗂️ Dataset Used
 https://www.v7labs.com/open-datasets/ferg
+![FERG](https://grail.cs.washington.edu/projects/deepexpr/sampleimages.jpg)
 
 ## 📥 Download Model
 
