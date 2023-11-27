@@ -25,6 +25,9 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 ## 📊 Run Simulation
 -
 
+## 📤 Deployment
+- 
+
 ## 👥 Contributors
 - Tan Swee Yang  (tanryan001@1utar.my)
 - Prof. Dr. Ts. Yau Kok Lim (yaukl@utar.edu.my)
