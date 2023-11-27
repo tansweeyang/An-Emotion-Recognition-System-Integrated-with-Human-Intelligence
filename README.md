@@ -16,7 +16,7 @@ https://www.v7labs.com/open-datasets/ferg
 
 ## ⏳ Installation
 ### 💻 Requirements
-- Python 
+- Python 3.5+
 ### ⚙️ Setup
 - 
 
