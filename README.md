@@ -1,4 +1,6 @@
 # Human-in-the-loop Reinforcement Learning for Emotion Recognition
+
+## ✏️ Description
 Introduces a enhanced approach called two-state Q-learning with human feedback (TS-QL-HF) that uses Q-learning and human feedback to improve the accuracy of facial emotion recognition systems without requiring tramendous amount of data on minority population, ensuring fairness when building such systems.
 
 ![FER System](https://github.com/tansweeyang/Human-in-the-loop-Reinforcement-Learning-for-Emotion-Recognition/blob/ba6fc30777812190ac3a97de65332fbf957dfd28/FER_Flow.jpg)
