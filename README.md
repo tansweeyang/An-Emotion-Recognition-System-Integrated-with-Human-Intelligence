@@ -32,3 +32,6 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 ## 🦻 Support
 If you have any questions or issues, please feel free to contact us or open an issue in this repository.
 
+## 📃 License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
