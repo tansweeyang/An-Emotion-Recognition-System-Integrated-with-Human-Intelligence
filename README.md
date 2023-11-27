@@ -3,6 +3,12 @@ Introduces a enhanced approach called two-state Q-learning with human feedback (
 
 ![FER System](https://github.com/tansweeyang/Human-in-the-loop-Reinforcement-Learning-for-Emotion-Recognition/blob/ba6fc30777812190ac3a97de65332fbf957dfd28/FER_Flow.jpg)
 
+## Key Contributions
+a) design TS-QL-HF, which incorporates human feedback as an alternative reward function for TS-QL, for enhancing the quality of rewards
+b) develop an action selection strategy and fine-tune hyperparameters for improving the convergence rate while operating in deterministic environments
+c) separate the learning of unrelated policies among multiple agents for improving convergence
+d) investigate the use of DQL in deterministic environments.
+
 ## Results
 ![Results](https://github.com/tansweeyang/Human-in-the-loop-Reinforcement-Learning-for-Emotion-Recognition/blob/98b84ab686210d67d84b11fb996dbc64103e4fbe/Results.jpg)
 
