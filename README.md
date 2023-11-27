@@ -16,4 +16,8 @@ https://www.v7labs.com/open-datasets/ferg
 
 ## ⏳ Installation
 
+## 👥 Contributors
+- Tan Swee Yang
+- Prof. Dr. Ts. Yau Kok Lim
+
 
