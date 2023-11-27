@@ -22,7 +22,7 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 ### ⚙️ Setup
 1. Install
 
-## 📊 Demo
+## 📊 Simulation Demo
 - 
 
 ## 👥 Contributors
