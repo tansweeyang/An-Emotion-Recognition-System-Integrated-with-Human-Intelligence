@@ -23,10 +23,12 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 1. Install
 
 ## 📊 Simulation Demo
-- 
+-
 
 ## 👥 Contributors
 - Tan Swee Yang  (tanryan001@1utar.my)
 - Prof. Dr. Ts. Yau Kok Lim (yaukl@utar.edu.my)
 
+## 🦻 Support
+If you have any questions or issues, please feel free to contact us or open an issue in this repository.
 
