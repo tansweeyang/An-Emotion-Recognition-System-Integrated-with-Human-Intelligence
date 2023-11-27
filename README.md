@@ -20,6 +20,9 @@ Get the dataset here: https://www.v7labs.com/open-datasets/ferg
 ### 💻 Requirements
 - Python 3.5+
 ### ⚙️ Setup
+1. Install
+
+## 📊 Demo
 - 
 
 ## 👥 Contributors
