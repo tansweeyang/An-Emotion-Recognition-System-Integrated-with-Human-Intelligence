@@ -14,7 +14,7 @@ Introduces a novel approach, two-state Q-learning with human feedback (TS-QL-HF)
 Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/open-datasets/ferg
 ![FERG](https://grail.cs.washington.edu/projects/deepexpr/sampleimages.jpg)
 
-## 📥 Download Models
+## 📥 Pretrained Models
 
 ## ⏳ Installation
 ### 💻 Requirements
