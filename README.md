@@ -15,6 +15,10 @@ https://www.v7labs.com/open-datasets/ferg
 ## 📥 Download Model
 
 ## ⏳ Installation
+### 💻 Requirements
+- Python 
+### ⚙️ Setup
+- 
 
 ## 👥 Contributors
 - Tan Swee Yang  (tanryan001@1utar.my)
