@@ -17,7 +17,7 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 ## 📥 Trained Models
 
 ## ⏳ Installation
-### 💻 Requirements
+### 💻 Prerequisite 
 - Python 3.5+
 ### ⚙️ Setup
 1. Install
