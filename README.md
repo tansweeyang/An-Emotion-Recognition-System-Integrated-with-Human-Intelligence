@@ -10,7 +10,7 @@ Introduces a enhanced approach called two-state Q-learning with human feedback (
 - Final year project report: https://github.com/tansweeyang/An-Emotion-Recognition-System-Integrated-with-Human-Intelligence/blob/75cbc1d33f7cc33245475dbf1f9e036436d7afe1/documents/SE_1904180_FYP%20report%20-%20TanSweeYang.pdf
 
 ## 🗂️ Dataset Used
-https://www.v7labs.com/open-datasets/ferg
+Download the dataset here: https://www.v7labs.com/open-datasets/ferg
 ![FERG](https://grail.cs.washington.edu/projects/deepexpr/sampleimages.jpg)
 
 ## 📥 Download Model
