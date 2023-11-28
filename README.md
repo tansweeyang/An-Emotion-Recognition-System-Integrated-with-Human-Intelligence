@@ -21,7 +21,7 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 ## ⏳ Installation
 ### 💻 Requirements
 - Python 3.5+
-- opencv
+- Opencv
 - Keras
 - Matplotlib
 - Pandas
