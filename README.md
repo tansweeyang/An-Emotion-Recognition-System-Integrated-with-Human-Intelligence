@@ -5,6 +5,8 @@ Introduces a novel approach, two-state Q-learning with human feedback (TS-QL-HF)
 
 ![FER System](https://github.com/tansweeyang/Human-in-the-loop-Reinforcement-Learning-for-Emotion-Recognition/blob/ba6fc30777812190ac3a97de65332fbf957dfd28/FER_Flow.jpg)
 
+![Iterative QL Workflow](https://github.com/tansweeyang/Human-in-the-loop-Reinforcement-Learning-for-Emotion-Recognition/blob/14b842071780ea72d2738566de61ceab73fcd792/Iterative%20QL%20Flow.jpg)
+
 ## 📝 Publications
 - Research paper: [Human-in-the-loop Reinforcement Learning for Emotion Recognition.pdf](https://github.com/tansweeyang/Human-in-the-loop-Reinforcement-Learning-for-Emotion-Recognition/blob/650a5d08414160b20a9c1318e002ae5039f6b3f9/HITL%20FER5_Submitted.pdf)
 - Final year project report:
