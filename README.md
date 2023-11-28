@@ -21,7 +21,10 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 ## ⏳ Installation
 ### 💻 Prerequisite 
 - Python 3.5+
-- Pip
+- Keras
+- Matplotlib
+- Pandas
+- Numpy
 ### ⚙️ Setup
 1. Install
 
