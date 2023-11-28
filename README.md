@@ -28,7 +28,10 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 - Numpy
 - Scipy
 ### ⚙️ Setup
-1. Install
+1. Install requirements listed in requirements.txt
+'''bash
+pip install -r requirements.txt
+'''
 
 ## 📊 Run Simulation
 -
