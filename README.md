@@ -29,9 +29,9 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 - Scipy
 ### ⚙️ Setup
 1. Install requirements listed in requirements.txt
-'''bash
+```bash
 pip install -r requirements.txt
-'''
+```
 
 ## 📊 Run Simulation
 -
