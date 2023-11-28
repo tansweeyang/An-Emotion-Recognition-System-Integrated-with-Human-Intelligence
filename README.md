@@ -21,10 +21,12 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 ## ⏳ Installation
 ### 💻 Prerequisite 
 - Python 3.5+
+- opencv
 - Keras
 - Matplotlib
 - Pandas
 - Numpy
+- Scipy
 ### ⚙️ Setup
 1. Install
 
