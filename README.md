@@ -17,6 +17,7 @@ Get the dataset here (Place in ```/dataset``` folder) : https://www.v7labs.com/o
 ![FERG](https://grail.cs.washington.edu/projects/deepexpr/sampleimages.jpg)
 
 ## 📥 Trained Models
+Get the trained models here (Place in ```/pretrained_models``` folder): ![Trained_Models](https://google.com)
 
 ## ⏳ Installation
 ### 💻 Requirements
